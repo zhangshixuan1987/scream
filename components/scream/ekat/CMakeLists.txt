@@ -77,7 +77,7 @@ set (EKAT_INCLUDE_DIRS_LIST
 set (EKAT_INCLUDE_DIRS "${EKAT_INCLUDE_DIRS_LIST}" CACHE INTERNAL "EKAT library include dirs")
 
 include(EkatSetCompilerFlags)
-SetCompilerFlags()
+EkatSetCompilerFlags()
 
 add_subdirectory(src/ekat)
 

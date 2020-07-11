@@ -25,7 +25,7 @@ function (EKAT_set_fpmodel_flags fpmodel_string flags)
   endif()
 endfunction()
 
-macro (SetCompilerFlags)
+macro (EkatSetCompilerFlags)
   set (FP_MODEL_FLAG "")
   set (UT_FP_MODEL_FLAG "")
   if (DEFINED SCREAM_FPMODEL)

@@ -81,7 +81,7 @@ endif()
 
 # 6) Set compiler-specific flags
 include(EkatSetCompilerFlags)
-SetCompilerFlags()
+EkatSetCompilerFlags()
 
 if (SCREAM_DOUBLE_PRECISION)
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
