@@ -219,8 +219,8 @@ print_var(SCREAM_TPL_INCLUDE_DIRS)
 # detect an apple build
 print_var(CMAKE_SYSTEM_NAME)
 include(CheckSymbolExists)
-check_symbol_exists(feenableexcept "fenv.h" HAVE_FEENABLEEXCEPT_PROTOTYPE)
-print_var(HAVE_FEENABLEEXCEPT_PROTOTYPE)
+check_symbol_exists(feenableexcept "fenv.h" HAVE_FEENABLEEXCEPT)
+print_var(HAVE_FEENABLEEXCEPT)
 
 # This must be done using add_definitions because it is used to determine
 # whether to include scream_config.h.
