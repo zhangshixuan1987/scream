@@ -73,6 +73,6 @@ protected:
   ekat::Comm          m_haero_comm;
 
   ekat::ParameterList m_haero_params;
-};
+};// class HiResAerosol
 
-}
+}// namespace scream
