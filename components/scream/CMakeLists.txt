@@ -35,6 +35,8 @@ endif()
 
 set (CMAKE_CXX_STANDARD 11)
 
+
+
 if (NOT CIME_BUILD)
   project(SCREAM CXX Fortran)
 
@@ -213,6 +215,12 @@ print_var(SCREAM_MPIRUN_EXE)
 print_var(SCREAM_LIB_ONLY)
 print_var(SCREAM_TPL_LIBRARIES)
 print_var(SCREAM_TPL_INCLUDE_DIRS)
+
+# detect an apple build
+print_var(CMAKE_SYSTEM_NAME)
+include(CheckSymbolExists)
+check_symbol_exists(feenableexcept "fenv.h" HAVE_FEENABLEEXCEPT_PROTOTYPE)
+print_var(HAVE_FEENABLEEXCEPT_PROTOTYPE)
 
 # This must be done using add_definitions because it is used to determine
 # whether to include scream_config.h.
