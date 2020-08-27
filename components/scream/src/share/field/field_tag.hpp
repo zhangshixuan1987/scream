@@ -34,7 +34,8 @@ enum class FieldTag {
   ComponentX,
   ComponentY,
   TimeLevel,
-  Variable
+  Variable,
+  AerosolMode
 };
 
 inline std::string tag2string (const FieldTag ft) {
@@ -70,6 +71,9 @@ inline std::string tag2string (const FieldTag ft) {
     case FieldTag::Variable:
       name = "VAR";
       break;
+    case FieldTag::AerosolMode:
+      name = "AEROM";
+      break;
     default:
       EKAT_ERROR_MSG("Error! Unrecognized field tag.");
   }
@@ -89,6 +93,7 @@ namespace ShortFieldTagsNames {
   constexpr auto CMP  = FieldTag::Component;
   constexpr auto CMPX = FieldTag::ComponentX;
   constexpr auto CMPY = FieldTag::ComponentY;
+  constexpr auto AEROM = FieldTag::AerosolMode;
 }
 
 } // namespace scream

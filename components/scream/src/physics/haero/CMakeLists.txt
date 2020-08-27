@@ -4,6 +4,7 @@ set(HAERO_SRCS
 )
 
 if (NOT CUDA_BUILD)
+# list(APPEND HAERO_SRCS)
 endif()
 
 add_library(haero ${HAERO_SRCS})
