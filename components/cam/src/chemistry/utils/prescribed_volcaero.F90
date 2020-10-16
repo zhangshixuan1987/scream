@@ -11,6 +11,7 @@ module prescribed_volcaero
   use cam_logfile,  only : iulog
   use radconstants,   only: nswbands, nlwbands
   use read_volc_radiation_data,  only: read_volc_radiation_data_init, advance_volc_radiation_data
+  use perf_mod, only: t_startf, t_stopf
   implicit none
   private
   save 
@@ -289,6 +290,8 @@ end subroutine prescribed_volcaero_readnl
     !WACCM-derived relation between mass concentration and wet aerosol radius in meters
     real(r8),parameter :: radius_conversion = 1.9e-4_r8
 
+    call t_startf('prescribed_volcaero_adv')
+
     if( .not. has_prescribed_volcaero ) return
 
     if (trim(adjustl(file_type))== 'VOLC_CMIP6') then
@@ -345,6 +348,7 @@ end subroutine prescribed_volcaero_readnl
           
        enddo
     endif
+    call t_stopf('prescribed_volcaero_adv')
 
   end subroutine prescribed_volcaero_adv
 

@@ -2817,6 +2817,8 @@ subroutine phys_timestep_init(phys_state, cam_out, pbuf2d)
 
   !-----------------------------------------------------------------------------
 
+  call t_startf('phys_timestep_init')
+
   ! Chemistry surface values
   call chem_surfvals_set()
 
@@ -2877,6 +2879,7 @@ subroutine phys_timestep_init(phys_state, cam_out, pbuf2d)
   !----------------------------------
   if(Nudge_Model) call nudging_timestep_init(phys_state)
 
+  call t_stopf('phys_timestep_init')
 end subroutine phys_timestep_init
 
 

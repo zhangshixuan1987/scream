@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 module imex_mod
   use kinds,              only: iulog, real_kind
   use dimensions_mod,     only: nlev, nlevp, np
@@ -11,6 +15,10 @@ module imex_mod
   use element_state,      only: max_itercnt, max_deltaerr, max_reserr
   use control_mod,        only: theta_hydrostatic_mode, qsplit
   use perf_mod,           only: t_startf, t_stopf
+#ifdef HOMMEXX_BFB_TESTING
+  use bfb_mod,            only: tridiag_diagdom_bfb_a1x1
+  use iso_c_binding,      only: c_loc
+#endif
 
   implicit none
 
@@ -51,7 +59,7 @@ contains
 
 
   subroutine compute_stage_value_dirk(nm1,alphadt_nm1,n0,alphadt_n0,np1,dt2,qn0,elem,hvcoord,hybrid,&
-       deriv,nets,nete,itercount,itererr)
+       deriv,nets,nete,itercount,itererr,verbosity_in)
     !===================================================================================
     ! this subroutine solves a stage value equation for a DIRK method which takes the form
     !
@@ -86,6 +94,7 @@ contains
     integer :: itercount
     real (kind=real_kind) :: itererr
     real (kind=real_kind), intent(in) :: alphadt_n0,alphadt_nm1
+    integer, intent(in), optional :: verbosity_in
 
     type (hvcoord_t)     , intent(in) :: hvcoord
     type (hybrid_t)      , intent(in) :: hybrid
@@ -117,7 +126,7 @@ contains
     real (kind=real_kind) :: deltatol,restol,deltaerr,reserr,rcond,min_rcond,anorm,dt3,alpha
     real (kind=real_kind) :: dw,dx,alpha_k,alphas(np,np)
     integer :: i,j,k,l,ie,nt
-    integer :: nsafe
+    integer :: nsafe,verbosity
 
 !#define HOMME_IMEX_MKLSOLVE
 #ifdef HOMME_IMEX_MKLSOLVE
@@ -135,6 +144,9 @@ contains
     integer :: iwork(nlev),info2
 #endif
 
+    verbosity = 1
+    if (present(verbosity_in)) verbosity = verbosity_in
+
     call t_startf('compute_stage_value_dirk')
 
     if (theta_hydrostatic_mode) then
@@ -151,7 +163,11 @@ contains
        
     ! dirk settings
     maxiter=20
+#ifdef HOMMEXX_BFB_TESTING
+    deltatol=1.0e-6_real_kind ! In BFB testing we can't converge due to calls of zeroulp
+#else
     deltatol=1.0e-11_real_kind  ! exit if newton increment < deltatol
+#endif
 
     !restol=1.0e-13_real_kind    ! exit if residual < restol  
     ! condition number and thus residual depends strongly on dt and min(dz)
@@ -235,8 +251,10 @@ contains
           do j=1,np
              do i=1,np
                 if ( dphi(i,j,k)  > -g) then
+                   if (verbosity > 0) then
                    write(iulog,*) 'WARNING:IMEX limiting initial guess. ie,i,j,k=',ie,i,j,k
                    write(iulog,*) 'dphi(i,j,k)=  ',dphi(i,j,k)
+                   endif
                    dphi(i,j,k)=-g
                    nsafe=1
                 endif
@@ -276,6 +294,13 @@ contains
                    JacDt(k,i,j) = JacD(i,j,k)
                    xt(k,i,j) = x(i,j,k)
                 end do
+# ifdef HOMMEXX_BFB_TESTING
+                ! Note: the C function is designed to accept both single and double precision,
+                !       so we need to pass also the size of a real (last argument)
+                call tridiag_diagdom_bfb_a1x1(nlev, JacLt(:,i,j), jacDt(:,i,j), jacUt(:,i,j), &
+                                              xt(:,i,j),INT(SIZEOF(JacL)/SIZE(JacL),4))
+# else
+
 #ifdef NEWTONCOND
                 ! nlev condition number: 500e3 with phi, 850e3 with dphi
                 anorm=DLANGT('1-norm', nlev, JacLt(:,i,j),JacDt(:,i,j),JacUt(:,i,j))
@@ -290,6 +315,7 @@ contains
                 do k = 1,nlev
                    x(i,j,k) = xt(k,i,j)
                 end do
+#endif
              end do
           end do
 #else
@@ -304,10 +330,10 @@ contains
           dphi(:,:,nlev) = dphi_n0(:,:,nlev) - dt2*g*(w_np1(:,:,nlev) + x(:,:,nlev))
 
           alphas = 1
-          if (maxval(dphi(:,:,1:nlev)) >= 0) then
+          if (any(dphi(:,:,1:nlev) >= 0)) then
              do j=1,np
                 do i=1,np
-                   if (maxval(dphi(i,j,1:nlev)) < 0) cycle
+                   if (.not. any(dphi(i,j,1:nlev) >= 0)) cycle
 
                    ! Step halfway to the distance at which at least one dphi is 0.
                    alpha = 1
@@ -346,7 +372,8 @@ contains
                elem(ie)%state%dp3d(:,:,:,np1),dphi,pnh,exner,dpnh_dp_i,'dirk2')
           Fn(:,:,1:nlev) = w_np1(:,:,1:nlev) - (w_n0(:,:,1:nlev) + g*dt2 * (dpnh_dp_i(:,:,1:nlev)-1))
 
-          reserr=maxval(abs(Fn))/(wmax*abs(dt2)) 
+          ! this is not used in this loop, so move out of loop
+          !reserr=maxval(abs(Fn))/(wmax*abs(dt2)) 
           deltaerr=maxval(abs(x))/wmax
 
           ! update iteration count and error measure
@@ -362,14 +389,18 @@ contains
        ! keep track of running  max iteraitons and max error (reset after each diagnostics output)
        max_itercnt=max(itercount,max_itercnt)
        max_deltaerr=max(deltaerr,max_deltaerr)
+       reserr=maxval(abs(Fn))/(wmax*abs(dt2))
        max_reserr=max(reserr,max_reserr)
 #ifdef NEWTONCOND
        min_rcond=min(rcond,min_rcond)
 #endif
        itererr=min(max_reserr,max_deltaerr) ! passed back to ARKODE
 
+
        if (itercount >= maxiter) then
+          if (verbosity > 0) then
           write(iulog,*) 'WARNING:IMEX solver failed b/c max iteration count was met',deltaerr,reserr
+          end if
        end if
     end do ! end do for the ie=nets,nete loop
 #ifdef NEWTONCOND
@@ -506,7 +537,7 @@ contains
     real (kind=real_kind) :: vtheta_dp(np,np,nlev)
     real (kind=real_kind) :: dpnh_dp_i(np,np,nlevp)
     real (kind=real_kind) :: exner(np,np,nlev)
-    real (kind=real_kind) :: pnh(np,np,nlev),	pnh_i(np,np,nlevp)
+    real (kind=real_kind) :: pnh(np,np,nlev), pnh_i(np,np,nlevp)
     real (kind=real_kind) :: norminfJ0(np,np)
 
     real (kind=real_kind) :: dt,epsie,jacerrorvec(6),minjacerr
