@@ -37,8 +37,9 @@ void usage(const char* prog) {
   fprintf(stderr, "-a [name]   Use only the specified algorithm.\n");
   fprintf(stderr, "            Valid options: jaccard, jaro (default=jaccard)\n");
   fprintf(stderr, "-d          Retrieve the description of the given field\n");
-  fprintf(stderr, "-w          Matches input string as a whole. E.g, passing\n");
-  fprintf(stderr, "            -w my_field won't match \"field_my\", \"my\", or \"field\".\n");
+  fprintf(stderr, "-w          Treats input string as a single word (no tokenization).\n");
+  fprintf(stderr, "            E.g., if the input string is 'my_field', with -w\n");
+  fprintf(stderr, "            \"field_my\", \"my\", or \"field\" would not be matches.\n");
   fprintf(stderr, "            NOTE: not usable with '-a jaro'.\n");
   fprintf(stderr, "-s [thresh] Report names similar to the given field,\n");
   fprintf(stderr, "            with a given string similarity index threshold\n");
