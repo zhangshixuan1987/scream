@@ -60,7 +60,7 @@ def parse_cf_xml(xml_file):
             units = ""
             descr = ""
             for elem in child:
-                if elem.tag == 'units':
+                if elem.tag == 'canonical_units':
                     units = elem.text or ""
                 elif elem.tag == 'description':
                     descr = elem.text or ""
