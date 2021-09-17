@@ -1,3 +1,35 @@
-\section{Atmospheric Driver (AD)}
+\section{Atmospheric Driver}
+
+This section gives an overview of the data structures and routines that we globally refer to as the Atmosphere Driver (AD).
+In its minimal terms, the AD is in charge of initializing, running, and finalizing all the Atmosphere Processes (AP).
+Each AP is an implementation of a mathematical model describing a particular part of the atmosphere.
+We generally divide APs in two categories: dynamics and physics.
+The former solves the Navier-Stokes equations (or some approximation of them),
+to compute the common thermodynamics variables (velocity, temperature, pressure,..).
+The latter is made up of a variety of so-called "physics parametrizations",
+each of which represents a numerical approximation of some particular physical phenomenon
+that the Navier-Stokes equations do not capture.
+It is worth nothing that there can only be \emph{one} AP of type "Dynamics",
+while there can be several physics parametrizations.
+Common physics parametrizations are turbulence models, radiation models, microphysics.
+In the following sections, we will describe the physics parametrizations used in scream,
+providing also details on their implementation.
+
+\subsection{The field class stack}
+The \texttt{Field} class is the data structure used by SCREAM to pass variables around.
+
+
+\subsection{Atmosphere Processes}
+The class \texttt{AtmosphereProcess} is one of the core building blocks of SCREAM.
+In its minimal terms, an AP is a black box, which receives
+
+
+
+\subsection{Grids}
+
+\subsection{Driver}
+
+
+More practically, we include in the AD umbrella also the structures and routines that constitue the building block for the rest of the atmosphere component.
 
 Not sure how subsections for the AD should be arranged.
