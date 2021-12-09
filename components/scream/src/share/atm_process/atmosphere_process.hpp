@@ -9,7 +9,9 @@
 #include "share/field/field_request.hpp"
 #include "share/field/field.hpp"
 #include "share/field/field_group.hpp"
+
 #include "share/grid/grids_manager.hpp"
+#include "share/io/scream_output_manager.hpp"
 
 #include "ekat/mpi/ekat_comm.hpp"
 #include "ekat/ekat_parameter_list.hpp"
@@ -90,10 +92,7 @@ public:
   // The name of the process
   virtual std::string name () const = 0;
 
-  // Give the grids manager to the process, so it can grab its grid
-  // Upon return, the atm proc should have a valid and complete list
-  // of in/out/inout FieldRequest and GroupRequest.
-  virtual void set_grids (const std::shared_ptr<const GridsManager> grids_manager) = 0;
+  void set_grids_manager (const std::shared_ptr<const GridsManager> grids_manager);
 
   // These are the three main interfaces:
   //   - the initialize method sets up all the stuff the process needs in order to run,
@@ -313,6 +312,11 @@ protected:
     }
   }
 
+  // Give the grids manager to the process, so it can grab its grid
+  // Upon return, the atm proc should have a valid and complete list
+  // of in/out/inout FieldRequest and GroupRequest.
+  virtual void set_grids (const std::shared_ptr<const GridsManager> grids_manager) = 0;
+
   // Override this method to initialize the derived
   virtual void initialize_impl(const RunType run_type) = 0;
 
@@ -422,6 +426,10 @@ private:
   using prop_check_ptr = std::shared_ptr<FieldPropertyCheck>; 
   std::list<std::pair<FieldIdentifier,prop_check_ptr>> m_property_checks_in;
   std::list<std::pair<FieldIdentifier,prop_check_ptr>> m_property_checks_out;
+
+  std::shared_ptr<const GridsManager>   m_grids_manager;
+  std::shared_ptr<OutputManager>        m_output_required_fields;
+  std::shared_ptr<OutputManager>        m_output_computed_fields;
 
   // This process's copy of the timestamp, which is set on initialization and
   // updated during stepping.

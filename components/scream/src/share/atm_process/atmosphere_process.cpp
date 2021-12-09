@@ -1,5 +1,8 @@
 #include "share/atm_process/atmosphere_process.hpp"
 
+#include "ekat/ekat_parameter_list.hpp"
+#include "share/grid/user_provided_grids_manager.hpp"
+
 #include "ekat/ekat_assert.hpp"
 
 #include <set>
@@ -14,6 +17,13 @@ AtmosphereProcess::AtmosphereProcess (const ekat::Comm& comm, const ekat::Parame
   , m_params(params)
 {}
 
+void AtmosphereProcess::
+set_grids_manager (const std::shared_ptr<const GridsManager> grids_manager) {
+  m_grids_manager = grids_manager;
+
+  this->set_grids(m_grids_manager);
+}
+
 void AtmosphereProcess::initialize (const TimeStamp& t0, const RunType run_type) {
   set_fields_and_groups_pointers();
   m_time_stamp = t0;
@@ -26,6 +36,34 @@ void AtmosphereProcess::initialize (const TimeStamp& t0, const RunType run_type)
       "Error! Invalid number of subcycles.\n"
       "  - Atm proc name: " + this->name() + "\n"
       "  - Num subcycles: " + std::to_string(m_num_subcycles) + "\n");
+
+  bool out_req_fields  = m_params.get("Output Requied Fields",false);
+  bool out_comp_fields = m_params.get("Output Computed Fields",false);
+  if (out_req_fields || out_comp_fields) {
+    std::map<std::string,std::shared_ptr<FieldManager<Real>>> field_mgrs;
+    for (const auto& gn : this->get_required_grids()) {
+      field_mgrs.emplace(gn,m_grids_manager->get_grid(gn));
+      field_mgrs[gn]->registration_begins();
+      field_mgrs[gn]->registration_ends();
+    }
+
+    for (const auto& f : get_fields_in()) {
+      const auto& gn = f.get_header().get_identifier().get_grid_name();
+      field_mgrs.at(gn)->add_field(f);
+    }
+
+    if (out_req_fields) {
+      m_output_required_fields = std::make_shared<OutputManager>();
+    }
+    if (out_comp_fields) {
+      m_output_computed_fields = std::make_shared<OutputManager>();
+    }
+
+    {
+      ekat::ParameterList params;
+      m_output_required_fields->setup(this->get_comm(),params,field_mgrs,m_grids_manager,t0,false,false);
+    }
+  }
 }
 
 void AtmosphereProcess::run (const int dt) {
@@ -40,6 +78,10 @@ void AtmosphereProcess::run (const int dt) {
       "  - Num subcycles: " + std::to_string(m_num_subcycles) + "\n"
       "  - Time step    : " + std::to_string(dt) + "\n");
 
+  if (m_output_required_fields) {
+    m_output_required_fields->run(m_time_stamp+dt);
+  }
+
   // Let the derived class do the actual run
   auto dt_sub = dt / m_num_subcycles;
   for (int isub=0; isub<m_num_subcycles; ++isub) {
@@ -49,6 +91,9 @@ void AtmosphereProcess::run (const int dt) {
   if (m_params.get("Enable Output Field Checks", true)) {
     // Run any check on required fields that has been stored in this AP
     check_computed_fields();
+  }
+  if (m_output_computed_fields) {
+    m_output_computed_fields->run(m_time_stamp+dt);
   }
 
   // Update all output fields time stamps
