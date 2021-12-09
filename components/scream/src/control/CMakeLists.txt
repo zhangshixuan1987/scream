@@ -10,7 +10,7 @@ set(SCREAM_CONTROL_HEADERS
 )
 
 add_library(scream_control ${SCREAM_CONTROL_SOURCES})
-target_link_libraries(scream_control PUBLIC scream_share scream_io)
+target_link_libraries(scream_control PUBLIC scream_share atm_process scream_io)
 
 if (NOT SCREAM_LIB_ONLY)
   add_subdirectory(tests)

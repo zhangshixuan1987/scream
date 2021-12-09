@@ -1,7 +1,8 @@
 #include "shoc_f90.hpp"
 #include "shoc_functions_f90.hpp"
-#include "physics_constants.hpp"
 #include "shoc_ic_cases.hpp"
+
+#include "physics/share/physics_constants.hpp"
 
 #include "ekat/ekat_assert.hpp"
 

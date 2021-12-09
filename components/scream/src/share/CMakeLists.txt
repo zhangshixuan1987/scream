@@ -1,37 +1,9 @@
-if (DEFINED ENV{SCREAM_FAKE_ONLY})
-  set(SHARE_SRC
-    scream_config.cpp
-    scream_session.cpp
-    util/scream_test_session.cpp
-    util/scream_time_stamp.cpp
-    )
-else()
-  set(SHARE_SRC
-    scream_config.cpp
-    scream_session.cpp
-    atm_process/atmosphere_process.cpp
-    atm_process/atmosphere_process_group.cpp
-    atm_process/atmosphere_process_dag.cpp
-    field/field_alloc_prop.cpp
-    field/field_identifier.cpp
-    field/field_header.cpp
-    field/field_layout.cpp
-    field/field_tracking.cpp
-    field/field.cpp
-    field/field_group.cpp
-    field/field_manager.cpp
-    field/field_property_checks/field_nan_check.cpp
-    field/field_property_checks/field_within_interval_check.cpp
-    grid/abstract_grid.cpp
-    grid/mesh_free_grids_manager.cpp
-    grid/se_grid.cpp
-    grid/point_grid.cpp
-    grid/user_provided_grids_manager.cpp
-    grid/remap/abstract_remapper.cpp
-    util/scream_test_session.cpp
-    util/scream_time_stamp.cpp
-    )
-endif()
+set(SHARE_SRC
+  scream_config.cpp
+  scream_session.cpp
+  util/scream_test_session.cpp
+  util/scream_time_stamp.cpp
+)
 
 add_library(scream_share ${SHARE_SRC})
 target_include_directories(scream_share PUBLIC ${SCREAM_SRC_DIR} ${SCREAM_BINARY_DIR}/src)
@@ -64,9 +36,12 @@ if (NOT DEFINED ENV{SCREAM_FAKE_ONLY})
       COMMENT "Downloading CF conventions XML file and building YAML dictionary...")
   endif()
 
+  add_subdirectory(field)
+  add_subdirectory(grid)
+  add_subdirectory(io)
+  add_subdirectory(atm_process)
+
   if (NOT SCREAM_LIB_ONLY)
     add_subdirectory(tests)
   endif()
-
-  add_subdirectory(io)
 endif()

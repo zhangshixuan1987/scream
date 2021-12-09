@@ -63,9 +63,9 @@ if (NOT CUDA_BUILD OR Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE)
 endif()
 
 add_library(shoc ${SHOC_SRCS})
-target_include_directories(shoc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../share)
+# target_include_directories(shoc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../share)
 set_target_properties(shoc PROPERTIES Fortran_MODULE_DIRECTORY ${SCREAM_F90_MODULES})
-target_link_libraries(shoc physics_share scream_share)
+target_link_libraries(shoc physics_share scream_share atm_process)
 target_compile_options(shoc PUBLIC $<$<COMPILE_LANGUAGE:Fortran>:${SCREAM_Fortran_FLAGS}>)
 
 if (NOT SCREAM_LIB_ONLY)

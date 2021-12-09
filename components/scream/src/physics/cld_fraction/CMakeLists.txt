@@ -11,7 +11,7 @@ set(CLDFRAC_HEADERS
 
 add_library(cld_fraction ${CLDFRAC_SRCS})
 target_include_directories(cld_fraction PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../share)
-target_link_libraries(cld_fraction physics_share scream_share)
+target_link_libraries(cld_fraction physics_share scream_share atm_process)
 target_compile_options(cld_fraction PUBLIC)
 
 # Cloud fraction does not yet have a set of unit tests or a BFB test comparing with the F90
