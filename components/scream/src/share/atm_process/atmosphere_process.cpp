@@ -37,9 +37,10 @@ void AtmosphereProcess::initialize (const TimeStamp& t0, const RunType run_type)
       "  - Atm proc name: " + this->name() + "\n"
       "  - Num subcycles: " + std::to_string(m_num_subcycles) + "\n");
 
-  bool out_req_fields  = m_params.get("Output Requied Fields",false);
-  bool out_comp_fields = m_params.get("Output Computed Fields",false);
-  if (out_req_fields || out_comp_fields) {
+  bool do_out_req_fields  = m_params.isSublist("Output Requied Fields");
+  bool do_out_comp_fields = m_params.isSublist("Output Computed Fields");
+  if (do_out_req_fields || do_out_comp_fields) {
+    // Create helper fields manager, adding all fields/groups used by this process
     std::map<std::string,std::shared_ptr<FieldManager<Real>>> field_mgrs;
     for (const auto& gn : this->get_required_grids()) {
       field_mgrs.emplace(gn,m_grids_manager->get_grid(gn));
@@ -47,21 +48,70 @@ void AtmosphereProcess::initialize (const TimeStamp& t0, const RunType run_type)
       field_mgrs[gn]->registration_ends();
     }
 
+    std::map<std::string,std::vector<std::string>> f_in, f_out;
     for (const auto& f : get_fields_in()) {
       const auto& gn = f.get_header().get_identifier().get_grid_name();
       field_mgrs.at(gn)->add_field(f);
+      f_in[gn].push_back(f.get_header().get_identifier().name());
+    }
+    for (const auto& f : get_fields_out()) {
+      const auto& gn = f.get_header().get_identifier().get_grid_name();
+      field_mgrs.at(gn)->add_field(f);
+      f_out[gn].push_back(f.get_header().get_identifier().name());
+    }
+    for (const auto& g : get_groups_in()) {
+      if (g.m_bundle) {
+        auto f = *g.m_bundle;
+        const auto& gn = g.grid_name();
+        field_mgrs.at(gn)->add_field(f);
+        f_in[gn].push_back(f.get_header().get_identifier().name());
+      }
+    }
+    for (const auto& g : get_groups_out()) {
+      if (g.m_bundle) {
+        auto f = *g.m_bundle;
+        const auto& gn = g.grid_name();
+        field_mgrs.at(gn)->add_field(f);
+        f_out[gn].push_back(f.get_header().get_identifier().name());
+      }
     }
 
-    if (out_req_fields) {
+    // Helper lambda, to set defaults and mandatory values for output manager param lists
+    auto set_defaults = [&](ekat::ParameterList& pl, bool inputs) {
+      pl.set<std::string>("Averaging Type", "Instant");
+      auto& out_control = pl.sublist("Output Contol");
+      out_control.set("Frequency",1);
+      out_control.set("Frequency Units","Steps");
+      auto& checkpt_control = pl.sublist("Checkpoint Control");
+      checkpt_control.set("Frequency",0);
+
+      // Add fields names only if not already present
+      if (not pl.isParameter("Field Names")) {
+        const auto& grids = this->get_required_grids();
+        auto& default_f_names = inputs ? f_in : f_out;
+        for (const auto& gn : grids) {
+          if (not pl.sublist("Fields").isSublist(gn)) {
+            auto fn_pl = pl.sublist("Fields").sublist(gn);
+            fn_pl.set<std::vector<std::string>>("Field Names",default_f_names.at(gn));
+          }
+        }
+      }
+    };
+
+    // Create output managers for in and/or out fields
+    // Note: even if this is a reestarted run, we do not have the possibility of
+    //       retrieving the "case" t0, so we just pass 'false' for is_restarted_run.
+    if (do_out_req_fields) {
       m_output_required_fields = std::make_shared<OutputManager>();
+      auto& out_req_fields_pl = m_params.sublist("Output Requied Fields");
+      set_defaults(out_req_fields_pl,true);
+      m_output_required_fields->setup(this->get_comm(),out_req_fields_pl,field_mgrs,m_grids_manager,t0,false,false);
     }
-    if (out_comp_fields) {
+    if (do_out_comp_fields) {
       m_output_computed_fields = std::make_shared<OutputManager>();
-    }
-
-    {
-      ekat::ParameterList params;
-      m_output_required_fields->setup(this->get_comm(),params,field_mgrs,m_grids_manager,t0,false,false);
+      auto& out_comp_fields_pl = m_params.sublist("Output Computed Fields");
+      set_defaults(out_comp_fields_pl,false);
+      m_output_computed_fields->setup(this->get_comm(),out_comp_fields_pl,field_mgrs,m_grids_manager,t0,false,false);
     }
   }
 }

@@ -66,13 +66,11 @@ TEST_CASE("field_mgr", "") {
   field_mgr.register_field(FR{fid3,SL{"group_1","group_2","group_3"}});
   field_mgr.register_field(FR{fid2,"group_4"});
   field_mgr.register_field(FR{fid4});
-  field_mgr.register_field(FR{fid5,FR{fid4},subview_dim,subview_slice,true}); // Register a dynamic subfield
 
   // === Invalid registration calls === //
   REQUIRE_THROWS(field_mgr.register_field(FR{bad1}));
   REQUIRE_THROWS(field_mgr.register_field(FR{bad2}));
   REQUIRE_THROWS(field_mgr.register_field(FR{bad2}));
-  REQUIRE_THROWS(field_mgr.register_field(FR{fid5,FR{fid4},1,0,false})); // Cannot register inconsistent subfields
 
   field_mgr.registration_ends();
 
