@@ -1,0 +1,1 @@
+# SCREAM C++ Style Guide
