@@ -9,6 +9,11 @@ nav:
     - 'Overview': 'dev/index.md'
     - 'Installation': 'common/installation.md'
     - 'Style Guide': 'dev/style_guide.md'
+    - 'Model Architecture': 'dev/architecture.md'
+    - 'Building Blocks': 'dev/building_blocks.md'
+    - 'The Atmospheric Driver': 'dev/ad.md'
+    - 'Atmospheric Processes': 'dev/processes.md'
+    - 'Testing': 'dev/testing.md'
 
 edit_uri: ""
 
