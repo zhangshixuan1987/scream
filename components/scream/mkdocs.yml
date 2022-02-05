@@ -17,6 +17,11 @@ nav:
 
 edit_uri: ""
 
+site_url: https://e3sm-project.github.io/scream/
+
+docs_dir: docs/mkdocs
+site_dir: ctest-build/docs
+
 theme:
   name: material
   palette:
