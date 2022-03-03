@@ -20,15 +20,14 @@ essentials:
 
 * In the MkDocs universe, documentation is written using Markdown and a set
   of nifty configurable extensions (including Latex-style math!).
-* Documentation files are organized into folders within this one:
+* Currently, all documentation files are organized into folders within this
+  one. In principle, we can make as deep a hierarchy as we want (and we do love
+  our with deep hierachies!), but we're starting simple:
   * The User Guide, which explains how to configure and run SCREAM, lives
     in `user/`.
   * The Developer Guide, which helps SCREAM developers find out what's where,
     lives in `dev/`.
   * Documentation common to these two guides is stored in `common/`.
-  In principle, we can make as deep a hierarchy as we want (and people with
-  advanced degrees love to go nuts with deep hierachies!), but let's start
-  simple.
 * MkDocs is configured using settings in `mkdocs.yml`, which lives in SCREAM's
   top-level source directory.
 * Typically, you won't have to edit `mkdocs.yml`. The only thing you'll
