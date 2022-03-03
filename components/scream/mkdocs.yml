@@ -11,6 +11,7 @@ nav:
     - 'Installation': 'common/installation.md'
     - 'Building Unit Tests': 'common/build_unit_tests.md'
     - 'Style Guide': 'dev/style_guide.md'
+    - 'Code Organization': 'dev/source-tree.md'
     - 'SCREAM data structures': 'dev/data_structures.md'
     - 'Performance portability structures': 'dev/perf_blocks.md'
     - 'Atmospheric Processes': 'dev/processes.md'
