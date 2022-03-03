@@ -5,20 +5,25 @@ nav:
   - 'User Guide':
     - 'Overview': 'user/index.md'
     - 'Installation': 'common/installation.md'
+    - 'Using Simple Prescribed Aerosol (SPA)': 'user/spa.md'
   - 'Developer Guide':
     - 'Overview': 'dev/index.md'
     - 'Installation': 'common/installation.md'
+    - 'Building Unit Tests': 'common/build_unit_tests.md'
     - 'Style Guide': 'dev/style_guide.md'
     - 'SCREAM data structures': 'dev/data_structures.md'
     - 'Performance portability structures': 'dev/perf_blocks.md'
     - 'Atmospheric Processes': 'dev/processes.md'
     - 'Testing': 'dev/testing.md'
+  - 'Creating this Documentation':
+    - 'Overview': 'mkdocs/overview.md'
+    - 'Building html': 'mkdocs/build.md'
 
 edit_uri: ""
 
 site_url: https://e3sm-project.github.io/scream/
 
-docs_dir: docs/mkdocs
+docs_dir: docs/user_and_dev_guides
 site_dir: ctest-build/docs
 
 theme:
