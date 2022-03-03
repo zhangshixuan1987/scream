@@ -533,16 +533,23 @@ struct RemapFunctor : public Remapper {
   }
 
 private:
+#ifndef NDEBUG
+  template<typename Tag>
+  using TeamPolicyType = Kokkos::TeamPolicy<ExecSpace,Kokkos::LaunchBounds<512,1>,Tag>;
+#else
+  template<typename Tag>
+  using TeamPolicyType = Kokkos::TeamPolicy<ExecSpace,Tag>;
+#endif
   template <typename FunctorTag>
   typename std::enable_if<OnGpu<ExecSpace>::value == false,
-                          Kokkos::TeamPolicy<ExecSpace, FunctorTag> >::type
+                          TeamPolicyType<FunctorTag> >::type
   remap_team_policy(int num_exec) {
     return Homme::get_default_team_policy<ExecSpace, FunctorTag>(num_exec);
   }
 
   template <typename FunctorTag>
   typename std::enable_if<OnGpu<ExecSpace>::value == true,
-                          Kokkos::TeamPolicy<ExecSpace, FunctorTag> >::type
+                          TeamPolicyType<FunctorTag> >::type
   remap_team_policy(int num_exec) {
     constexpr int num_threads = 16;
     constexpr int num_vectors = 32;
