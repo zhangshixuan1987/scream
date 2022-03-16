@@ -18,7 +18,7 @@ void Functions<S,D>
 ::cldliq_immersion_freezing(
   const Spack& T_atm, const Spack& lamc,
   const Spack& mu_c, const Spack& cdist1,
-  const Spack& qc_incld, const Spack& inv_qc_relvar,
+  const Spack& qc_incld, const Spack& /* inv_qc_relvar */,
   Spack& qc2qi_hetero_freeze_tend, Spack& nc2ni_immers_freeze_tend,
   const Smask& context)
 {

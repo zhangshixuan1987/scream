@@ -25,8 +25,8 @@ void Functions<S,D>
   Spack& qc2qi_collect_tend, Spack& qr2qi_immers_freeze_tend, Spack& ni2nr_melt_tend,
   Spack& nc_collect_tend, Spack& ncshdc, Spack& nc2ni_immers_freeze_tend,
   Spack& nr_collect_tend, Spack& ni_selfcollect_tend, Spack& qv2qi_vapdep_tend,
-  Spack& nr2ni_immers_freeze_tend, Spack& ni_sublim_tend, Spack& qv2qi_nucleat_tend,
-  Spack& ni_nucleat_tend, Spack& qc2qi_berg_tend,
+  Spack& nr2ni_immers_freeze_tend, Spack& ni_sublim_tend, Spack& /* qv2qi_nucleat_tend */,
+  Spack& /* ni_nucleat_tend */, Spack& qc2qi_berg_tend,
   const Smask& context)
 {
   Spack ir_cldm, il_cldm, lr_cldm;
