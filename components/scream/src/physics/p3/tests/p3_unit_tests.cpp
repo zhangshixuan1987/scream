@@ -39,7 +39,7 @@ struct UnitWrap::UnitTest<D>::TestP3Conservation
     Kokkos::deep_copy(cwdc_device, cwdc_host);
 
     // Run the lookup from a kernel and copy results back to host
-    Kokkos::parallel_for(RangePolicy(0, 1), KOKKOS_LAMBDA(const Int& i) {
+    Kokkos::parallel_for(RangePolicy(0, 1), KOKKOS_LAMBDA(const Int& /* i */) {
       Spack qc(cwdc_device(0).qc);
       Spack qc2qr_autoconv_tend(cwdc_device(0).qc2qr_autoconv_tend);
       Spack qc2qr_accret_tend(cwdc_device(0).qc2qr_accret_tend);
@@ -92,7 +92,7 @@ struct UnitWrap::UnitTest<D>::TestP3Conservation
     Kokkos::deep_copy(rwdc_device, rwdc_host);
 
     // Run the lookup from a kernel and copy results back to host
-    Kokkos::parallel_for(RangePolicy(0, 1), KOKKOS_LAMBDA(const Int& i) {
+    Kokkos::parallel_for(RangePolicy(0, 1), KOKKOS_LAMBDA(const Int& /* i */) {
       Spack qr(rwdc_device(0).qr);
       Spack qc2qr_autoconv_tend(rwdc_device(0).qc2qr_autoconv_tend);
       Spack qc2qr_accret_tend(rwdc_device(0).qc2qr_accret_tend);
@@ -145,7 +145,7 @@ struct UnitWrap::UnitTest<D>::TestP3Conservation
     Kokkos::deep_copy(iwdc_device, iwdc_host);
 
     // Run the lookup from a kernel and copy results back to host
-    Kokkos::parallel_for(RangePolicy(0, 1), KOKKOS_LAMBDA(const Int& i) {
+    Kokkos::parallel_for(RangePolicy(0, 1), KOKKOS_LAMBDA(const Int& /* i */) {
       Spack qi(iwdc_device(0).qi);
       Spack qv2qi_vapdep_tend(iwdc_device(0).qv2qi_vapdep_tend);
       Spack qv2qi_nucleat_tend(iwdc_device(0).qv2qi_nucleat_tend);
@@ -709,22 +709,22 @@ struct UnitWrap::UnitTest<D>::TestGetTimeSpacePhysVariables
     //fortran generated data is input to the following
     GetTimeSpacePhysVarsData gtspvd[max_pack_size] = {
       //        T_atm,       pres,        rho,       latent_heat_vapor,       latent_heat_sublim,        qv_sat_l,        qv_sat_i
-      {2.9792E+02, 9.8711E+04, 1.1532E+00, 2.5010E+06, 2.8347E+06, 2.0321E-02, 2.0321E-02},
-      {2.9792E+02, 9.8711E+04, 1.1532E+00, 2.5010E+06, 2.8347E+06, 2.0321E-02, 2.0321E-02},
-      {2.9583E+02, 9.7322E+04, 1.1449E+00, 2.5010E+06, 2.8347E+06, 1.8120E-02, 1.8120E-02},
-      {2.9375E+02, 9.5933E+04, 1.1366E+00, 2.5010E+06, 2.8347E+06, 1.6134E-02, 1.6134E-02},
-      {2.8959E+02, 9.3156E+04, 1.1196E+00, 2.5010E+06, 2.8347E+06, 1.2729E-02, 1.2729E-02},
-      {2.8750E+02, 9.1767E+04, 1.1109E+00, 2.5010E+06, 2.8347E+06, 1.1279E-02, 1.1279E-02},
-      {2.8542E+02, 9.0378E+04, 1.1020E+00, 2.5010E+06, 2.8347E+06, 9.9759E-03, 9.9759E-03},
-      {2.8334E+02, 8.8989E+04, 1.0931E+00, 2.5010E+06, 2.8347E+06, 8.8076E-03, 8.8076E-03},
-      {2.8125E+02, 8.7600E+04, 1.0840E+00, 2.5010E+06, 2.8347E+06, 7.7615E-03, 7.7615E-03},
-      {2.7917E+02, 8.6211E+04, 1.0748E+00, 2.5010E+06, 2.8347E+06, 6.8265E-03, 6.8265E-03},
-      {2.7709E+02, 8.4822E+04, 1.0654E+00, 2.5010E+06, 2.8347E+06, 5.9921E-03, 5.9921E-03},
-      {2.7501E+02, 8.3433E+04, 1.0559E+00, 2.5010E+06, 2.8347E+06, 5.2488E-03, 5.2488E-03},
-      {2.7292E+02, 8.2044E+04, 1.0463E+00, 2.5010E+06, 2.8347E+06, 4.5879E-03, 4.5766E-03},
-      {2.7084E+02, 8.0656E+04, 1.0365E+00, 2.5010E+06, 2.8347E+06, 4.0015E-03, 3.9112E-03},
-      {2.6876E+02, 7.9267E+04, 1.0265E+00, 2.5010E+06, 2.8347E+06, 3.4821E-03, 3.3349E-03},
-      {2.6667E+02, 7.7878E+04, 1.0164E+00, 2.5010E+06, 2.8347E+06, 3.0231E-03, 2.8368E-03},
+      {2.9792E+02, 9.8711E+04, 1.1532E+00, 2.5010E+06, 2.8347E+06, 2.0321E-02, 2.0321E-02, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.9792E+02, 9.8711E+04, 1.1532E+00, 2.5010E+06, 2.8347E+06, 2.0321E-02, 2.0321E-02, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.9583E+02, 9.7322E+04, 1.1449E+00, 2.5010E+06, 2.8347E+06, 1.8120E-02, 1.8120E-02, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.9375E+02, 9.5933E+04, 1.1366E+00, 2.5010E+06, 2.8347E+06, 1.6134E-02, 1.6134E-02, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.8959E+02, 9.3156E+04, 1.1196E+00, 2.5010E+06, 2.8347E+06, 1.2729E-02, 1.2729E-02, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.8750E+02, 9.1767E+04, 1.1109E+00, 2.5010E+06, 2.8347E+06, 1.1279E-02, 1.1279E-02, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.8542E+02, 9.0378E+04, 1.1020E+00, 2.5010E+06, 2.8347E+06, 9.9759E-03, 9.9759E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.8334E+02, 8.8989E+04, 1.0931E+00, 2.5010E+06, 2.8347E+06, 8.8076E-03, 8.8076E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.8125E+02, 8.7600E+04, 1.0840E+00, 2.5010E+06, 2.8347E+06, 7.7615E-03, 7.7615E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.7917E+02, 8.6211E+04, 1.0748E+00, 2.5010E+06, 2.8347E+06, 6.8265E-03, 6.8265E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.7709E+02, 8.4822E+04, 1.0654E+00, 2.5010E+06, 2.8347E+06, 5.9921E-03, 5.9921E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.7501E+02, 8.3433E+04, 1.0559E+00, 2.5010E+06, 2.8347E+06, 5.2488E-03, 5.2488E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.7292E+02, 8.2044E+04, 1.0463E+00, 2.5010E+06, 2.8347E+06, 4.5879E-03, 4.5766E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.7084E+02, 8.0656E+04, 1.0365E+00, 2.5010E+06, 2.8347E+06, 4.0015E-03, 3.9112E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.6876E+02, 7.9267E+04, 1.0265E+00, 2.5010E+06, 2.8347E+06, 3.4821E-03, 3.3349E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {2.6667E+02, 7.7878E+04, 1.0164E+00, 2.5010E+06, 2.8347E+06, 3.0231E-03, 2.8368E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
     // Sync to device

@@ -45,25 +45,25 @@ static void run_bfb()
 
   CloudRainAccretionData cloud_rain_acc_data[max_pack_size] = {
     // rho, inv_rho, qc_incld, nc_incld, qr_incld, qc2qr_accret_tend, nc_accret_tend, inv_qc_relvar
-    {rho1, inv_rho1, qc_incld_small, nc_incld1, qr_incld_small,inv_qc_relvar_val},
-    {rho2, inv_rho2, qc_incld_small, nc_incld2, qr_incld_small,inv_qc_relvar_val},
-    {rho3, inv_rho3, qc_incld_small, nc_incld3, qr_incld_small,inv_qc_relvar_val},
-    {rho4, inv_rho4, qc_incld_small, nc_incld4, qr_incld_small,inv_qc_relvar_val},
+    {rho1, inv_rho1, qc_incld_small, nc_incld1, qr_incld_small,inv_qc_relvar_val, 0, 0},
+    {rho2, inv_rho2, qc_incld_small, nc_incld2, qr_incld_small,inv_qc_relvar_val, 0, 0},
+    {rho3, inv_rho3, qc_incld_small, nc_incld3, qr_incld_small,inv_qc_relvar_val, 0, 0},
+    {rho4, inv_rho4, qc_incld_small, nc_incld4, qr_incld_small,inv_qc_relvar_val, 0, 0},
 
-    {rho1, inv_rho1, qc_incld_small, nc_incld1, qr_incld_not_small,inv_qc_relvar_val},
-    {rho2, inv_rho2, qc_incld_small, nc_incld2, qr_incld_not_small,inv_qc_relvar_val},
-    {rho3, inv_rho3, qc_incld_small, nc_incld3, qr_incld_not_small,inv_qc_relvar_val},
-    {rho4, inv_rho4, qc_incld_small, nc_incld4, qr_incld_not_small,inv_qc_relvar_val},
+    {rho1, inv_rho1, qc_incld_small, nc_incld1, qr_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {rho2, inv_rho2, qc_incld_small, nc_incld2, qr_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {rho3, inv_rho3, qc_incld_small, nc_incld3, qr_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {rho4, inv_rho4, qc_incld_small, nc_incld4, qr_incld_not_small,inv_qc_relvar_val, 0, 0},
 
-    {rho1, inv_rho1, qc_incld_not_small, nc_incld1, qr_incld_small,inv_qc_relvar_val},
-    {rho2, inv_rho2, qc_incld_not_small, nc_incld2, qr_incld_small,inv_qc_relvar_val},
-    {rho3, inv_rho3, qc_incld_not_small, nc_incld3, qr_incld_small,inv_qc_relvar_val},
-    {rho4, inv_rho4, qc_incld_not_small, nc_incld4, qr_incld_small,inv_qc_relvar_val},
+    {rho1, inv_rho1, qc_incld_not_small, nc_incld1, qr_incld_small,inv_qc_relvar_val, 0, 0},
+    {rho2, inv_rho2, qc_incld_not_small, nc_incld2, qr_incld_small,inv_qc_relvar_val, 0, 0},
+    {rho3, inv_rho3, qc_incld_not_small, nc_incld3, qr_incld_small,inv_qc_relvar_val, 0, 0},
+    {rho4, inv_rho4, qc_incld_not_small, nc_incld4, qr_incld_small,inv_qc_relvar_val, 0, 0},
 
-    {rho1, inv_rho1, qc_incld_not_small, nc_incld1, qr_incld_not_small,inv_qc_relvar_val},
-    {rho2, inv_rho2, qc_incld_not_small, nc_incld2, qr_incld_not_small,inv_qc_relvar_val},
-    {rho3, inv_rho3, qc_incld_not_small, nc_incld3, qr_incld_not_small,inv_qc_relvar_val},
-    {rho4, inv_rho4, qc_incld_not_small, nc_incld4, qr_incld_not_small,inv_qc_relvar_val}
+    {rho1, inv_rho1, qc_incld_not_small, nc_incld1, qr_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {rho2, inv_rho2, qc_incld_not_small, nc_incld2, qr_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {rho3, inv_rho3, qc_incld_not_small, nc_incld3, qr_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {rho4, inv_rho4, qc_incld_not_small, nc_incld4, qr_incld_not_small,inv_qc_relvar_val, 0, 0}
   };
 
   // Sync to device

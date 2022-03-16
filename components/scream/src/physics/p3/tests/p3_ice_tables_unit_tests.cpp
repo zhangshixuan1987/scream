@@ -110,93 +110,93 @@ struct UnitWrap::UnitTest<D>::TestTableIce {
     // Load some lookup inputs, need at least one per pack value
     LookupIceData lid[max_pack_size] = {
       // qi,   ni,     qm,     rhop
-      {0.971E-07, 0.657E+06, 0.971E-07, 0.900E+03},
-      {0.510E-02, 0.454E+06, 0.714E-05, 0.500E+02},
-      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00},
-      {0.136E-08, 0.487E+07, 0.811E-10, 0.500E+02},
+      {0.971E-07, 0.657E+06, 0.971E-07, 0.900E+03, 0, 0 ,0, 0, 0, 0, 0, 0},
+      {0.510E-02, 0.454E+06, 0.714E-05, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.136E-08, 0.487E+07, 0.811E-10, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0},
 
-      {0.971E-07, 0.657E+06, 0.971E-07, 0.900E+03},
-      {0.510E-02, 0.454E+01, 0.714E-05, 0.500E+02},
-      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00},
-      {0.136E-08, 0.487E+06, 0.811E-10, 0.500E+02},
+      {0.971E-07, 0.657E+06, 0.971E-07, 0.900E+03, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.510E-02, 0.454E+01, 0.714E-05, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.136E-08, 0.487E+06, 0.811E-10, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0},
 
-      {0.971E-07, 0.657E+06, 0.271E-06, 0.900E+03},
-      {0.510E-02, 0.454E+06, 0.714E-05, 0.500E+02},
-      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00},
-      {0.136E-08, 0.487E+06, 0.811E-10, 0.500E+02},
+      {0.971E-07, 0.657E+06, 0.271E-06, 0.900E+03, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.510E-02, 0.454E+06, 0.714E-05, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.136E-08, 0.487E+06, 0.811E-10, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0},
 
-      {0.971E-07, 0.657E+06, 0.971E-07, 0.200E+04},
-      {0.510E-02, 0.454E+06, 0.714E-05, 0.500E+02},
-      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00},
-      {0.136E-08, 0.487E+06, 0.811E-10, 0.500E+02}
+      {0.971E-07, 0.657E+06, 0.971E-07, 0.200E+04, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.510E-02, 0.454E+06, 0.714E-05, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.500E-07, 0.545E+06, 0.000E+00, 0.000E+00, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0.136E-08, 0.487E+06, 0.811E-10, 0.500E+02, 0, 0, 0, 0, 0, 0, 0, 0}
     };
 
     LookupIceDataB lidb[max_pack_size] = {
       // qr,      nr
-      {0.263E-05, 0.100E+07},
-      {0.100E-01, 0.100E+07},
-      {0.000E+00, 0.100E-15},
-      {0.263E-05, 0.100E+07},
+      {0.263E-05, 0.100E+07, 0, 0},
+      {0.100E-01, 0.100E+07, 0, 0},
+      {0.000E+00, 0.100E-15, 0, 0},
+      {0.263E-05, 0.100E+07, 0, 0},
 
-      {0.263E-05, 0.100E+07},
-      {0.100E-01, 0.100E+07},
-      {0.000E+00, 0.0      },
-      {0.263E-05, 0.100E+07},
+      {0.263E-05, 0.100E+07, 0, 0},
+      {0.100E-01, 0.100E+07, 0, 0},
+      {0.000E+00, 0.0      , 0, 0},
+      {0.263E-05, 0.100E+07, 0, 0},
 
-      {0.263E-05, 0.100E+07},
-      {0.100E-01, 0.100E+07},
-      {0.000E+00, 0.100E-15},
-      {0.263E-05, 0.100E+07},
+      {0.263E-05, 0.100E+07, 0, 0},
+      {0.100E-01, 0.100E+07, 0, 0},
+      {0.000E+00, 0.100E-15, 0, 0},
+      {0.263E-05, 0.100E+07, 0, 0},
 
-      {0.263E-05, 0.100E+07},
-      {0.100E-01, 0.100E+07},
-      {0.000E+00, 0.100E-15},
-      {0.263E-05, 0.100E+07}
+      {0.263E-05, 0.100E+07, 0, 0},
+      {0.100E-01, 0.100E+07, 0, 0},
+      {0.000E+00, 0.100E-15, 0, 0},
+      {0.263E-05, 0.100E+07, 0, 0}
     };
 
     static constexpr Int access_table_index = 2;
     AccessLookupTableData altd[max_pack_size] = {
-      {lid[0], access_table_index},
-      {lid[1], access_table_index},
-      {lid[2], access_table_index},
-      {lid[3], access_table_index},
+      {lid[0],  access_table_index, 0},
+      {lid[1],  access_table_index, 0},
+      {lid[2],  access_table_index, 0},
+      {lid[3],  access_table_index, 0},
 
-      {lid[4], access_table_index},
-      {lid[5], access_table_index},
-      {lid[6], access_table_index},
-      {lid[7], access_table_index},
+      {lid[4],  access_table_index, 0},
+      {lid[5],  access_table_index, 0},
+      {lid[6],  access_table_index, 0},
+      {lid[7],  access_table_index, 0},
 
-      {lid[8], access_table_index},
-      {lid[9], access_table_index},
-      {lid[10], access_table_index},
-      {lid[11], access_table_index},
+      {lid[8],  access_table_index, 0},
+      {lid[9],  access_table_index, 0},
+      {lid[10], access_table_index, 0},
+      {lid[11], access_table_index, 0},
 
-      {lid[12], access_table_index},
-      {lid[13], access_table_index},
-      {lid[14], access_table_index},
-      {lid[15], access_table_index}
+      {lid[12], access_table_index, 0},
+      {lid[13], access_table_index, 0},
+      {lid[14], access_table_index, 0},
+      {lid[15], access_table_index, 0}
     };
 
     AccessLookupTableCollData altcd[max_pack_size] = {
-      {lid[0], lidb[0], access_table_index},
-      {lid[1], lidb[1], access_table_index},
-      {lid[2], lidb[2], access_table_index},
-      {lid[3], lidb[3], access_table_index},
+      {lid[0],  lidb[0],  access_table_index, 0},
+      {lid[1],  lidb[1],  access_table_index, 0},
+      {lid[2],  lidb[2],  access_table_index, 0},
+      {lid[3],  lidb[3],  access_table_index, 0},
 
-      {lid[4], lidb[4], access_table_index},
-      {lid[5], lidb[5], access_table_index},
-      {lid[6], lidb[6], access_table_index},
-      {lid[7], lidb[7], access_table_index},
+      {lid[4],  lidb[4],  access_table_index, 0},
+      {lid[5],  lidb[5],  access_table_index, 0},
+      {lid[6],  lidb[6],  access_table_index, 0},
+      {lid[7],  lidb[7],  access_table_index, 0},
 
-      {lid[8], lidb[8], access_table_index},
-      {lid[9], lidb[9], access_table_index},
-      {lid[10], lidb[10], access_table_index},
-      {lid[11], lidb[11], access_table_index},
+      {lid[8],  lidb[8],  access_table_index, 0},
+      {lid[9],  lidb[9],  access_table_index, 0},
+      {lid[10], lidb[10], access_table_index, 0},
+      {lid[11], lidb[11], access_table_index, 0},
 
-      {lid[12], lidb[12], access_table_index},
-      {lid[13], lidb[13], access_table_index},
-      {lid[14], lidb[14], access_table_index},
-      {lid[15], lidb[15], access_table_index}
+      {lid[12], lidb[12], access_table_index, 0},
+      {lid[13], lidb[13], access_table_index, 0},
+      {lid[14], lidb[14], access_table_index, 0},
+      {lid[15], lidb[15], access_table_index, 0}
     };
 
     // Get data from fortran

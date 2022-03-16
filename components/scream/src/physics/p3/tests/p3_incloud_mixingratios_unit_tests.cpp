@@ -42,25 +42,25 @@ struct UnitWrap::UnitTest<D>::TestIncloudMixing {
 
     IncloudMixingData self[max_pack_size] = {
       //qc, qr, qi, qm, nc, nr, ni, bm, inv_cld_frac_l, inv_cld_frac_i, inv_cld_frac_r
-      {qc0, qr3, qi0, qm3, nc0, nr3, ni0, bm3, inv_cld_frac_l0, inv_cld_frac_i3, inv_cld_frac_r0},
-      {qc1, qr2, qi1, qm2, nc1, nr2, ni1, bm2, inv_cld_frac_l1, inv_cld_frac_i2, inv_cld_frac_r1},
-      {qc2, qr1, qi2, qm1, nc2, nr1, ni2, bm1, inv_cld_frac_l2, inv_cld_frac_i1, inv_cld_frac_r2},
-      {qc3, qr0, qi3, qm0, nc3, nr0, ni3, bm0, inv_cld_frac_l3, inv_cld_frac_i0, inv_cld_frac_r3},
+      {qc0, qr3, qi0, qm3, nc0, nr3, ni0, bm3, inv_cld_frac_l0, inv_cld_frac_i3, inv_cld_frac_r0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc1, qr2, qi1, qm2, nc1, nr2, ni1, bm2, inv_cld_frac_l1, inv_cld_frac_i2, inv_cld_frac_r1, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc2, qr1, qi2, qm1, nc2, nr1, ni2, bm1, inv_cld_frac_l2, inv_cld_frac_i1, inv_cld_frac_r2, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc3, qr0, qi3, qm0, nc3, nr0, ni3, bm0, inv_cld_frac_l3, inv_cld_frac_i0, inv_cld_frac_r3, 0, 0, 0, 0, 0, 0, 0, 0},
 
-      {qc0, qr0, qi0, qm0, nc0, nr0, ni0, bm0, inv_cld_frac_l0, inv_cld_frac_i0, inv_cld_frac_r0},
-      {qc1, qr1, qi1, qm1, nc1, nr1, ni1, bm1, inv_cld_frac_l1, inv_cld_frac_i1, inv_cld_frac_r1},
-      {qc2, qr2, qi2, qm2, nc2, nr2, ni2, bm2, inv_cld_frac_l2, inv_cld_frac_i2, inv_cld_frac_r2},
-      {qc3, qr3, qi3, qm3, nc3, nr3, ni3, bm3, inv_cld_frac_l3, inv_cld_frac_i3, inv_cld_frac_r3},
+      {qc0, qr0, qi0, qm0, nc0, nr0, ni0, bm0, inv_cld_frac_l0, inv_cld_frac_i0, inv_cld_frac_r0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc1, qr1, qi1, qm1, nc1, nr1, ni1, bm1, inv_cld_frac_l1, inv_cld_frac_i1, inv_cld_frac_r1, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc2, qr2, qi2, qm2, nc2, nr2, ni2, bm2, inv_cld_frac_l2, inv_cld_frac_i2, inv_cld_frac_r2, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc3, qr3, qi3, qm3, nc3, nr3, ni3, bm3, inv_cld_frac_l3, inv_cld_frac_i3, inv_cld_frac_r3, 0, 0, 0, 0, 0, 0, 0, 0},
 
-      {qc3, qr0, qi3, qm0, nc3, nr0, ni3, bm0, inv_cld_frac_l3, inv_cld_frac_i0, inv_cld_frac_r3},
-      {qc2, qr1, qi2, qm1, nc2, nr1, ni2, bm1, inv_cld_frac_l2, inv_cld_frac_i1, inv_cld_frac_r2},
-      {qc1, qr2, qi1, qm2, nc1, nr2, ni1, bm2, inv_cld_frac_l1, inv_cld_frac_i2, inv_cld_frac_r1},
-      {qc0, qr3, qi0, qm3, nc0, nr3, ni0, bm3, inv_cld_frac_l0, inv_cld_frac_i3, inv_cld_frac_r0},
+      {qc3, qr0, qi3, qm0, nc3, nr0, ni3, bm0, inv_cld_frac_l3, inv_cld_frac_i0, inv_cld_frac_r3, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc2, qr1, qi2, qm1, nc2, nr1, ni2, bm1, inv_cld_frac_l2, inv_cld_frac_i1, inv_cld_frac_r2, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc1, qr2, qi1, qm2, nc1, nr2, ni1, bm2, inv_cld_frac_l1, inv_cld_frac_i2, inv_cld_frac_r1, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc0, qr3, qi0, qm3, nc0, nr3, ni0, bm3, inv_cld_frac_l0, inv_cld_frac_i3, inv_cld_frac_r0, 0, 0, 0, 0, 0, 0, 0, 0},
 
-      {qc3, qr2, qi1, qm3, nc2, nr1, ni2, bm1, inv_cld_frac_l1, inv_cld_frac_i3, inv_cld_frac_r1},
-      {qc2, qr3, qi2, qm2, nc3, nr2, ni1, bm2, inv_cld_frac_l3, inv_cld_frac_i1, inv_cld_frac_r2},
-      {qc0, qr0, qi3, qm1, nc0, nr3, ni3, bm3, inv_cld_frac_l2, inv_cld_frac_i0, inv_cld_frac_r3},
-      {qc1, qr1, qi0, qm0, nc1, nr0, ni0, bm0, inv_cld_frac_l0, inv_cld_frac_i2, inv_cld_frac_r0}
+      {qc3, qr2, qi1, qm3, nc2, nr1, ni2, bm1, inv_cld_frac_l1, inv_cld_frac_i3, inv_cld_frac_r1, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc2, qr3, qi2, qm2, nc3, nr2, ni1, bm2, inv_cld_frac_l3, inv_cld_frac_i1, inv_cld_frac_r2, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc0, qr0, qi3, qm1, nc0, nr3, ni3, bm3, inv_cld_frac_l2, inv_cld_frac_i0, inv_cld_frac_r3, 0, 0, 0, 0, 0, 0, 0, 0},
+      {qc1, qr1, qi0, qm0, nc1, nr0, ni0, bm0, inv_cld_frac_l0, inv_cld_frac_i2, inv_cld_frac_r0, 0, 0, 0, 0, 0, 0, 0, 0}
     };
 
     // Sync to device

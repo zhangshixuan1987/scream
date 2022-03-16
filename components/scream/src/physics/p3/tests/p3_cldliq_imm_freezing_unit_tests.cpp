@@ -42,25 +42,25 @@ static void run_bfb()
 
   CldliqImmersionFreezingData cldliq_imm_freezing_data[max_pack_size] = {
     // T_atm, lamc, mu_c, cdist1, qc_incld, inv_qc_relvar
-    {t_not_freezing, lamc1, mu_c1, cdist11, qc_incld_small,inv_qc_relvar_val},
-    {t_not_freezing, lamc2, mu_c2, cdist12, qc_incld_small,inv_qc_relvar_val},
-    {t_not_freezing, lamc3, mu_c3, cdist13, qc_incld_small,inv_qc_relvar_val},
-    {t_not_freezing, lamc4, mu_c4, cdist14, qc_incld_small,inv_qc_relvar_val},
+    {t_not_freezing, lamc1, mu_c1, cdist11, qc_incld_small,inv_qc_relvar_val, 0, 0},
+    {t_not_freezing, lamc2, mu_c2, cdist12, qc_incld_small,inv_qc_relvar_val, 0, 0},
+    {t_not_freezing, lamc3, mu_c3, cdist13, qc_incld_small,inv_qc_relvar_val, 0, 0},
+    {t_not_freezing, lamc4, mu_c4, cdist14, qc_incld_small,inv_qc_relvar_val, 0, 0},
 
-    {t_not_freezing, lamc1, mu_c1, cdist11, qc_incld_not_small,inv_qc_relvar_val},
-    {t_not_freezing, lamc2, mu_c2, cdist12, qc_incld_not_small,inv_qc_relvar_val},
-    {t_not_freezing, lamc3, mu_c3, cdist13, qc_incld_not_small,inv_qc_relvar_val},
-    {t_not_freezing, lamc4, mu_c4, cdist14, qc_incld_not_small,inv_qc_relvar_val},
+    {t_not_freezing, lamc1, mu_c1, cdist11, qc_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {t_not_freezing, lamc2, mu_c2, cdist12, qc_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {t_not_freezing, lamc3, mu_c3, cdist13, qc_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {t_not_freezing, lamc4, mu_c4, cdist14, qc_incld_not_small,inv_qc_relvar_val, 0, 0},
 
-    {t_freezing, lamc1, mu_c1, cdist11, qc_incld_small,inv_qc_relvar_val},
-    {t_freezing, lamc2, mu_c2, cdist12, qc_incld_small,inv_qc_relvar_val},
-    {t_freezing, lamc3, mu_c3, cdist13, qc_incld_small,inv_qc_relvar_val},
-    {t_freezing, lamc4, mu_c4, cdist14, qc_incld_small,inv_qc_relvar_val},
+    {t_freezing, lamc1, mu_c1, cdist11, qc_incld_small,inv_qc_relvar_val, 0, 0},
+    {t_freezing, lamc2, mu_c2, cdist12, qc_incld_small,inv_qc_relvar_val, 0, 0},
+    {t_freezing, lamc3, mu_c3, cdist13, qc_incld_small,inv_qc_relvar_val, 0, 0},
+    {t_freezing, lamc4, mu_c4, cdist14, qc_incld_small,inv_qc_relvar_val, 0, 0},
 
-    {t_freezing, lamc1, mu_c1, cdist11, qc_incld_not_small,inv_qc_relvar_val},
-    {t_freezing, lamc2, mu_c2, cdist12, qc_incld_not_small,inv_qc_relvar_val},
-    {t_freezing, lamc3, mu_c3, cdist13, qc_incld_not_small,inv_qc_relvar_val},
-    {t_freezing, lamc4, mu_c4, cdist14, qc_incld_not_small,inv_qc_relvar_val}
+    {t_freezing, lamc1, mu_c1, cdist11, qc_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {t_freezing, lamc2, mu_c2, cdist12, qc_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {t_freezing, lamc3, mu_c3, cdist13, qc_incld_not_small,inv_qc_relvar_val, 0, 0},
+    {t_freezing, lamc4, mu_c4, cdist14, qc_incld_not_small,inv_qc_relvar_val, 0, 0}
   };
 
   // Sync to device

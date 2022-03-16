@@ -55,29 +55,29 @@ static void run_bfb()
 
   CalcRimeDensityData calc_rime_density_data[max_pack_size] = {
     // T_atm, rhofaci, table_val_qi_fallspd1, acn, lamc, mu_c, qc_incld, qc2qi_collect_tend
-    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_small},
-    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_small},
+    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_small, 0, 0},
+    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_small, 0, 0},
 
-    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_not_small},
-    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_not_small},
+    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_not_small, 0, 0},
+    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_not_small, 0, 0},
 
-    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_small},
-    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_small},
+    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_small, 0, 0},
+    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_small, 0, 0},
 
-    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_not_small},
-    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_not_small},
+    {t_not_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_not_small, 0, 0},
+    {t_not_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_not_small, 0, 0},
 
-    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_small},
-    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_small},
+    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_small, 0, 0},
+    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_small, 0, 0},
 
-    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_not_small},
-    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_not_small},
+    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_small, qc2qi_collect_tend_not_small, 0, 0},
+    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_small, qc2qi_collect_tend_not_small, 0, 0},
 
-    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_small},
-    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_small},
+    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_small, 0, 0},
+    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_small, 0, 0},
 
-    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_not_small},
-    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_not_small},
+    {t_freezing, rhofaci1, table_val_qi_fallspd1, acn1, lamc1, mu_c1, qc_incld_not_small, qc2qi_collect_tend_not_small, 0, 0},
+    {t_freezing, rhofaci2, table_val_qi_fallspd2, acn2, lamc2, mu_c2, qc_incld_not_small, qc2qi_collect_tend_not_small, 0, 0},
   };
 
   // Sync to device
