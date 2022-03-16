@@ -75,7 +75,7 @@ contains
   end subroutine init_params_f90
 
   function get_homme_int_param_f90 (param_name_c) result(param_value) bind(c)
-    use dimensions_mod,    only: qsize, nlev, np
+    use dimensions_mod,    only: qsize
     use control_mod,       only: ftype
     use homme_context_mod, only: elem
     !
@@ -207,7 +207,7 @@ contains
 
 
   subroutine set_homme_int_param_f90 (param_name_c, param_value) bind(c)
-    use dimensions_mod,    only: qsize, nlev
+    use dimensions_mod,    only: qsize
     use control_mod,       only: ftype, use_moisture
     use homme_context_mod, only: tl
     !

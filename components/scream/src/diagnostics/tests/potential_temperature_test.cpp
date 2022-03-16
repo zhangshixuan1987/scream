@@ -100,7 +100,6 @@ void run(std::mt19937_64& engine)
 
   using KT         = ekat::KokkosTypes<DeviceT>;
   using ExecSpace  = typename KT::ExeSpace;
-  using TeamPolicy = typename KT::TeamPolicy;
   using MemberType = typename KT::MemberType;
   using view_1d    = typename KT::template view_1d<ScalarT>;
   using rview_1d   = typename KT::template view_1d<RealType>;
@@ -111,9 +110,6 @@ void run(std::mt19937_64& engine)
 
   constexpr int num_levs = 32; // Number of levels to use for tests.
   const     int num_mid_packs = pack_info::num_packs(num_levs);
-
-  using Check = ChecksHelpers<ScalarT,num_levs>;
-
 
   // A world comm
   ekat::Comm comm(MPI_COMM_WORLD);

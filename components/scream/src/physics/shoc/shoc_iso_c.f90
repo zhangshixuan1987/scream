@@ -919,10 +919,10 @@ contains
   subroutine linear_interp_c(x1, x2, y1, y2, km1, km2, ncol, minthresh) bind(C)
     use shoc, only : linear_interp
 
+    integer(kind=c_int) , value, intent(in) :: km1, km2, ncol
     real(kind=c_real) , intent(in), dimension(ncol, km1) :: x1, y1
     real(kind=c_real) , intent(in), dimension(ncol, km2) :: x2
     real(kind=c_real) , intent(out), dimension(ncol, km2) :: y2
-    integer(kind=c_int) , value, intent(in) :: km1, km2, ncol
     real(kind=c_real) , value, intent(in) :: minthresh
 
     call linear_interp(x1, x2, y1, y2, km1, km2, ncol, minthresh)

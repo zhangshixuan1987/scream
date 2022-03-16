@@ -111,6 +111,7 @@ contains
        vap_liq_exchange, vap_ice_exchange, qv_prev, t_prev, elapsed_s) bind(C)
     use micro_p3, only : p3_main
 
+    integer(kind=c_int), value, intent(in) :: its,ite, kts,kte, it
     real(kind=c_real), intent(inout), dimension(its:ite,kts:kte) :: qc, nc, qr, nr, qv, th_atm
     real(kind=c_real), intent(inout), dimension(its:ite,kts:kte) :: qi, qm, ni, bm
     real(kind=c_real), intent(in), dimension(its:ite,kts:kte) :: pres, dz
@@ -120,7 +121,6 @@ contains
     real(kind=c_real), intent(out), dimension(its:ite) :: precip_liq_surf, precip_ice_surf
     real(kind=c_real), intent(out), dimension(its:ite,kts:kte) :: diag_eff_radius_qc
     real(kind=c_real), intent(out), dimension(its:ite,kts:kte) :: diag_eff_radius_qi, rho_qi
-    integer(kind=c_int), value, intent(in) :: its,ite, kts,kte, it
     logical(kind=c_bool), value, intent(in) :: do_predict_nc,do_prescribed_CCN
 
     real(kind=c_real), intent(in),    dimension(its:ite,kts:kte)      :: dpres
@@ -801,8 +801,8 @@ subroutine  update_prognostic_ice_c(qc2qi_hetero_freeze_tend,qc2qi_collect_tend,
    use micro_p3, only: check_values
 
    ! argmens
-   real(kind=c_real), intent(in) :: qv(kts:kte), temp(kts:kte), col_loc(3)
    integer(kind=c_int), value, intent(in) :: kts, kte, timestepcount, source_ind
+   real(kind=c_real), intent(in) :: qv(kts:kte), temp(kts:kte), col_loc(3)
    logical(kind=c_bool), value, intent(in) :: force_abort
 
    call check_values(qv,Temp,kts,kte,timestepcount,force_abort,source_ind,col_loc)
