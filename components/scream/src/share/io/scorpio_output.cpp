@@ -572,6 +572,11 @@ void AtmosphereOutput::set_diagnostics()
   auto& diag_factory = AtmosphereDiagnosticFactory::instance();
   for (const auto& fname : m_fields_names) {
     if (!m_field_mgr->has_field(fname)) {
+      // If this is not a field, we *must* have a diagnostic to compute it
+      EKAT_REQUIRE_MSG (diag_factory.has_product(fname),
+          "Error! AtmosphereOutput was not able to locate field '" + fname + "'.\n"
+          "       The field must either be in the field manager or computable as a diagnostic.\n");
+
       // Construct a diagnostic by this name
       ekat::ParameterList params;
       params.set<std::string>("Diagnostic Name", fname);
