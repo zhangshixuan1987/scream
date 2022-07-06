@@ -183,13 +183,7 @@ gather_internal_fields  () {
 
 void AtmosphereProcessGroup::initialize_impl (const RunType run_type) {
   for (auto& atm_proc : m_atm_processes) {
-    atm_proc->initialize(timestamp(),run_type);
-#ifdef SCREAM_HAS_MEMORY_USAGE
-    long long my_mem_usage = get_mem_usage(MB);
-    long long max_mem_usage;
-    m_comm.all_reduce(&my_mem_usage,&max_mem_usage,1,MPI_MAX);
-    m_atm_logger->debug("[EAMxx::initialize::"+atm_proc->name()+"] memory usage: " + std::to_string(max_mem_usage) + "MB");
-#endif
+    atm_proc->initialize(atm_timestamp(),run_type);
   }
 }
 
@@ -202,26 +196,14 @@ void AtmosphereProcessGroup::run_impl (const int dt) {
 }
 
 void AtmosphereProcessGroup::run_sequential (const Real dt) {
-  // Get the timestamp at the beginning of the step and advance it.
+  // Run all processes in sequence
+  for (auto atm_proc : m_atm_processes) {
+    atm_proc->run(dt);
+  }
+
+  // Update this process' time stamp
   auto ts = timestamp();
   ts += dt;
-
-  // The stored atm procs should update the timestamp if both
-  //  - this is the last subcycle iteration
-  //  - nobody from outside told this APG to not update timestamps
-  const bool do_update = do_update_time_stamp() &&
-                      (get_subcycle_iter()==get_num_subcycles()-1);
-  for (auto atm_proc : m_atm_processes) {
-    atm_proc->set_update_time_stamps(do_update);
-    // Run the process
-    atm_proc->run(dt);
-#ifdef SCREAM_HAS_MEMORY_USAGE
-    long long my_mem_usage = get_mem_usage(MB);
-    long long max_mem_usage;
-    m_comm.all_reduce(&my_mem_usage,&max_mem_usage,1,MPI_MAX);
-    m_atm_logger->debug("[EAMxx::run_sequential::"+atm_proc->name()+"] memory usage: " + std::to_string(max_mem_usage) + "MB");
-#endif
-  }
 }
 
 void AtmosphereProcessGroup::run_parallel (const Real /* dt */) {
@@ -231,12 +213,6 @@ void AtmosphereProcessGroup::run_parallel (const Real /* dt */) {
 void AtmosphereProcessGroup::finalize_impl (/* what inputs? */) {
   for (auto atm_proc : m_atm_processes) {
     atm_proc->finalize(/* what inputs? */);
-#ifdef SCREAM_HAS_MEMORY_USAGE
-    long long my_mem_usage = get_mem_usage(MB);
-    long long max_mem_usage;
-    m_comm.all_reduce(&my_mem_usage,&max_mem_usage,1,MPI_MAX);
-    m_atm_logger->debug("[EAMxx::finalize::"+atm_proc->name()+"] memory usage: " + std::to_string(max_mem_usage) + "MB");
-#endif
   }
 }
 

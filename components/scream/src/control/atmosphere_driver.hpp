@@ -120,9 +120,6 @@ public:
 
   const std::shared_ptr<SurfaceCoupling>& get_surface_coupling () const { return m_surface_coupling; }
 
-  // Get atmosphere time stamp
-  const util::TimeStamp& get_atm_time_stamp () const { return m_current_ts; }
-
   const std::shared_ptr<GridsManager>& get_grids_manager () const { return m_grids_manager; }
 
   const std::shared_ptr<ATMBufferManager>& get_memory_buffer() const { return m_memory_buffer; }
@@ -159,7 +156,7 @@ protected:
   std::shared_ptr<SurfaceCoupling>          m_surface_coupling;
 
   // This is the time stamp at the beginning of the time step.
-  util::TimeStamp                           m_current_ts;
+  std::shared_ptr<util::TimeStamp>          m_current_ts;
 
   // These are the time stamps of the beginning of this run and case
   // respectively. For initial runs, they are the same, but for

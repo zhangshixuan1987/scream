@@ -508,7 +508,7 @@ TEST_CASE("field_checks", "") {
   T_tend.allocate_view();
   T_tend.deep_copy(-1.0);
   T.deep_copy(-1.0);
-  util::TimeStamp t0(1,1,1,1,1,1);
+  auto t0 = std::make_shared<util::TimeStamp>(1,1,1,1,1,1);
 
   constexpr auto Warning = CheckFailHandling::Warning;
   constexpr auto Fatal   = CheckFailHandling::Fatal;
@@ -554,7 +554,7 @@ TEST_CASE ("subcycling") {
   ekat::Comm comm(MPI_COMM_WORLD);
 
   // A time stamp
-  util::TimeStamp t0 ({2022,1,1},{0,0,0});
+  auto t0 = std::make_shared<util::TimeStamp>(2022,1,1,0,0,0);
 
   // Create a grids manager
   auto gm = create_gm(comm);
@@ -578,14 +578,14 @@ TEST_CASE ("subcycling") {
     Field f(req.fid);
     f.allocate_view();
     f.deep_copy(0);
-    f.get_header().get_tracking().update_time_stamp(t0);
+    f.get_header().get_tracking().update_time_stamp(*t0);
     ap->set_required_field(f.get_const());
     ap->set_computed_field(f);
 
     Field f_sub(req.fid);
     f_sub.allocate_view();
     f_sub.deep_copy(0);
-    f_sub.get_header().get_tracking().update_time_stamp(t0);
+    f_sub.get_header().get_tracking().update_time_stamp(*t0);
     ap_sub->set_required_field(f_sub.get_const());
     ap_sub->set_computed_field(f_sub);
   }
@@ -618,7 +618,7 @@ TEST_CASE ("diagnostics") {
   ekat::Comm comm(MPI_COMM_WORLD);
 
   // A time stamp
-  util::TimeStamp t0 ({2022,1,1},{0,0,0});
+  auto t0 = std::make_shared<util::TimeStamp>(2022,1,1,0,0,0);
 
   // Create a grids manager
   auto gm = create_gm(comm);
@@ -646,7 +646,7 @@ TEST_CASE ("diagnostics") {
     Field f(req.fid);
     f.allocate_view();
     const auto name = f.name();
-    f.get_header().get_tracking().update_time_stamp(t0);
+    f.get_header().get_tracking().update_time_stamp(*t0);
     diag_sum->set_required_field(f.get_const());
     REQUIRE_THROWS(diag_fail->set_computed_field(f));
     if (name == "Field A") {

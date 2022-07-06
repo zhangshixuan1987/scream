@@ -436,8 +436,9 @@ initialize_fields (const util::TimeStamp& run_t0, const util::TimeStamp& case_t0
   }
 
   // Initialize time stamps
-  m_run_t0 = m_current_ts = run_t0;
+  m_run_t0 = run_t0;
   m_case_t0 = case_t0;
+  m_current_ts = std::make_shared<util::TimeStamp>(m_run_t0);
 
   // Initialize fields
   if (m_case_t0<m_run_t0) {
@@ -537,12 +538,12 @@ void AtmosphereDriver::restart_model ()
     for (const auto& fn : restart_group->m_fields_names) {
       fnames.push_back(fn);
     }
-    read_fields_from_file (fnames,it.first,filename,m_current_ts);
+    read_fields_from_file (fnames,it.first,filename,*m_current_ts);
   }
 
   // Read number of steps from restart file
   int nsteps = model_restart.read_int_scalar("nsteps");
-  m_current_ts.set_num_steps(nsteps);
+  m_current_ts->set_num_steps(nsteps);
   m_case_t0.set_num_steps(nsteps);
   m_run_t0.set_num_steps(nsteps);
 
@@ -632,7 +633,7 @@ void AtmosphereDriver::set_initial_conditions ()
 
         // Note: f is const, so we can't modify the tracking. So get the same field from the fm
         auto f_nonconst = m_field_mgrs.at(grid_name)->get_field(fid.name());
-        f_nonconst.get_header().get_tracking().update_time_stamp(m_current_ts);
+        f_nonconst.get_header().get_tracking().update_time_stamp(*m_current_ts);
       } else if (ic_pl_grid.isType<std::string>(fname)) {
         ic_fields_to_copy.push_back(fid);
         fields_inited[grid_name].push_back(fname);
@@ -710,7 +711,7 @@ void AtmosphereDriver::set_initial_conditions ()
     const auto& file_name = ic_pl.get<std::string>("Filename");
     for (const auto& it : m_field_mgrs) {
       const auto& grid_name = it.first;
-      read_fields_from_file (ic_fields_names[grid_name],it.first,file_name,m_current_ts);
+      read_fields_from_file (ic_fields_names[grid_name],it.first,file_name,*m_current_ts);
     }
     m_atm_logger->debug("    [EAMXX] Reading fields from file ... done!");
   }
@@ -768,7 +769,7 @@ void AtmosphereDriver::set_initial_conditions ()
       r->remap(true);
     }
     // Set the initial time stamp
-    f_tgt.get_header().get_tracking().update_time_stamp(m_current_ts);
+    f_tgt.get_header().get_tracking().update_time_stamp(*m_current_ts);
   }
   m_atm_logger->debug("    [EAMXX] Processing fields to copy ... done!");
 
@@ -793,7 +794,7 @@ void AtmosphereDriver::set_initial_conditions ()
           }
         }
         if (all_inited) {
-          track.update_time_stamp(m_current_ts);
+          track.update_time_stamp(*m_current_ts);
         }
       }
     }
@@ -927,8 +928,8 @@ void AtmosphereDriver::run (const int dt) {
 
   // Print current timestamp information
   m_atm_logger->log(ekat::logger::LogLevel::info,
-    "Atmosphere step = " + std::to_string(m_current_ts.get_num_steps()) + "\n" +
-    "  model time = " + m_current_ts.get_date_string() + " " + m_current_ts.get_time_string() + "\n");
+    "Atmosphere step = " + std::to_string(m_current_ts->get_num_steps()) + "\n" +
+    "  model time = " + m_current_ts->get_date_string() + " " + m_current_ts->get_time_string() + "\n");
 
   if (m_surface_coupling) {
     // Import fluxes from the component coupler (if any)
@@ -940,11 +941,11 @@ void AtmosphereDriver::run (const int dt) {
   m_atm_process_group->run(dt);
 
   // Update current time stamps
-  m_current_ts += dt;
+  *m_current_ts += dt;
 
   // Update output streams
   for (auto& out_mgr : m_output_managers) {
-    out_mgr.run(m_current_ts);
+    out_mgr.run(*m_current_ts);
   }
 
   if (m_surface_coupling) {

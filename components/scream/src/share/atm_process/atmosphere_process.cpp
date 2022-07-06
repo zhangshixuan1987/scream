@@ -34,13 +34,21 @@ AtmosphereProcess (const ekat::Comm& comm, const ekat::ParameterList& params)
   m_timer_prefix = m_params.get<std::string>("Timer Prefix","EAMxx::");
 }
 
-void AtmosphereProcess::initialize (const TimeStamp& t0, const RunType run_type) {
+void AtmosphereProcess::
+initialize (const std::shared_ptr<const TimeStamp>& t0, const RunType run_type) {
   if (this->type()!=AtmosphereProcessType::Group) {
     start_timer (m_timer_prefix + this->name() + "::init");
   }
   set_fields_and_groups_pointers();
-  m_time_stamp = t0;
+  m_time_stamp = *t0;
+  m_atm_time_stamp = t0;
   initialize_impl(run_type);
+#ifdef SCREAM_HAS_MEMORY_USAGE
+  long long my_mem_usage = get_mem_usage(MB);
+  long long max_mem_usage;
+  m_comm.all_reduce(&my_mem_usage,&max_mem_usage,1,MPI_MAX);
+  m_atm_logger->debug("[EAMxx::"+name()+"::initialize] memory usage: " + std::to_string(max_mem_usage) + "MB");
+#endif
   if (this->type()!=AtmosphereProcessType::Group) {
     stop_timer (m_timer_prefix + this->name() + "::init");
   }
@@ -63,23 +71,32 @@ void AtmosphereProcess::run (const int dt) {
   auto dt_sub = dt / m_num_subcycles;
   for (m_subcycle_iter=0; m_subcycle_iter<m_num_subcycles; ++m_subcycle_iter) {
     run_impl(dt_sub);
+    m_time_stamp += dt_sub;
+    update_time_stamps ();
   }
 
   if (m_params.get("Enable Postcondition Checks", true)) {
     // Run 'post-condition' property checks stored in this AP
     run_postcondition_checks();
   }
+#ifdef SCREAM_HAS_MEMORY_USAGE
+  long long my_mem_usage = get_mem_usage(MB);
+  long long max_mem_usage;
+  m_comm.all_reduce(&my_mem_usage,&max_mem_usage,1,MPI_MAX);
+  m_atm_logger->debug("[EAMxx::"+name()+"::run] memory usage: " + std::to_string(max_mem_usage) + "MB");
+#endif
 
-  m_time_stamp += dt;
-  if (m_update_time_stamps) {
-    // Update all output fields time stamps
-    update_time_stamps ();
-  }
   stop_timer (m_timer_prefix + this->name() + "::run");
 }
 
 void AtmosphereProcess::finalize (/* what inputs? */) {
   finalize_impl(/* what inputs? */);
+#ifdef SCREAM_HAS_MEMORY_USAGE
+  long long my_mem_usage = get_mem_usage(MB);
+  long long max_mem_usage;
+  m_comm.all_reduce(&my_mem_usage,&max_mem_usage,1,MPI_MAX);
+  m_atm_logger->debug("[EAMxx::"+name()+"::finalize] memory usage: " + std::to_string(max_mem_usage) + "MB");
+#endif
 }
 
 void AtmosphereProcess::set_required_field (const Field& f) {
@@ -292,9 +309,9 @@ void AtmosphereProcess::log (const LogLevel lev, const std::string& msg) const {
   m_atm_logger->log(lev,msg);
 }
 
-void AtmosphereProcess::set_update_time_stamps (const bool do_update) {
-  m_update_time_stamps = do_update;
-}
+// void AtmosphereProcess::set_update_time_stamps (const bool do_update) {
+//   m_update_time_stamps = do_update;
+// }
 
 void AtmosphereProcess::update_time_stamps () {
   const auto& t = timestamp();

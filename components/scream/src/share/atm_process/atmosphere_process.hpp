@@ -108,7 +108,7 @@ public:
   // TODO: should we check that initialize/finalize are called once per simulation?
   //       Whether it's a needed check depends on what resources we init/free, and how.
   // TODO: should we check that initialize has been called, when calling run/finalize?
-  void initialize (const TimeStamp& t0, const RunType run_type);
+  void initialize (const std::shared_ptr<const TimeStamp>& t0, const RunType run_type);
   void run (const int dt);
   void finalize   (/* what inputs? */);
 
@@ -121,7 +121,7 @@ public:
   // Note: if we are being subcycled from the outside, the host will set
   //       do_update=false, and we will not update the timestamp of the AP
   //       or that of the output fields.
-  void set_update_time_stamps (const bool do_update);
+  // void set_update_time_stamps (const bool do_update);
 
   // These methods set fields/groups in the atm process. The fields/groups are stored
   // in a list (with some helpers maps that can be used to quickly retrieve them).
@@ -238,7 +238,7 @@ protected:
 
   int get_num_subcycles () const { return m_num_subcycles; }
   int get_subcycle_iter () const { return m_subcycle_iter; }
-  bool do_update_time_stamp () const { return m_update_time_stamps; }
+  // bool do_update_time_stamp () const { return m_update_time_stamps; }
 
   // Derived classes can used these method, so that if we change how fields/groups
   // requirement are stored (e.g., change the std container), they don't need to change
@@ -353,6 +353,9 @@ protected:
   // This provides access to this process's timestamp.
   const TimeStamp& timestamp() const { return m_time_stamp; }
 
+  // Retrieve the atmosphere time stamp
+  const std::shared_ptr<const TimeStamp>& atm_timestamp() const { return m_atm_time_stamp; }
+
   // These three methods modify the FieldTracking of the input field (see field_tracking.hpp)
   void update_time_stamps ();
   void add_me_as_provider (const Field& f);
@@ -465,6 +468,10 @@ private:
   // updated during stepping.
   TimeStamp m_time_stamp;
 
+  // This is the overall atmosphere timestamp. It is updated by the driver at
+  // the end of a whole atm time step.
+  std::shared_ptr<const TimeStamp> m_atm_time_stamp;
+
   // The number of times this process needs to be subcycled
   int m_num_subcycles = 1;
 
@@ -473,7 +480,7 @@ private:
   int m_subcycle_iter;
 
   // Whether we need to update time stamps at the end of the run method
-  bool m_update_time_stamps = true;
+  // bool m_update_time_stamps = true;
 };
 
 // ================= IMPLEMENTATION ================== //

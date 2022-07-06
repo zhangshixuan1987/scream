@@ -645,19 +645,18 @@ void AtmosphereOutput::set_diagnostics()
       m_diagnostics.emplace(fname,diag);
     }
   }
+
   // Set required fields for all diagnostics
   for (const auto& dd : m_diagnostics) {
     const auto& diag = dd.second;
-    // TimeStamp control
-    util::TimeStamp t0;
-    bool t0_set = false;
+    // TimeStamp
+    std::shared_ptr<util::TimeStamp> t0;
     for (const auto& req : diag->get_required_field_requests()) {
       // Any required fields should be in the field manager, so we can gather
       // the TimeStamp for initialization from the first of these.
       const auto& req_field = get_field(req.fid.name());
-      if (!t0_set) {
-        t0 = req_field.get_header().get_tracking().get_time_stamp();
-        t0_set = true;
+      if (not t0) {
+        t0 = std::make_shared<util::TimeStamp>(req_field.get_header().get_tracking().get_time_stamp());
       }
       diag->set_required_field(req_field.get_const());
     }

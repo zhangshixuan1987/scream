@@ -78,7 +78,7 @@ void run(std::mt19937_64& engine)
   RPDF pdf_pres(0.0,PC::P0);
 
   // A time stamp
-  util::TimeStamp t0 ({2022,1,1},{0,0,0});
+  auto t0 = std::make_shared<util::TimeStamp>(2022,1,1,0,0,0);
 
   // Construct the Diagnostic
   ekat::ParameterList params;
@@ -98,7 +98,7 @@ void run(std::mt19937_64& engine)
     f_ap.request_allocation(packsize);
     f.allocate_view();
     const auto name = f.name();
-    f.get_header().get_tracking().update_time_stamp(t0);
+    f.get_header().get_tracking().update_time_stamp(*t0);
     diag->set_required_field(f.get_const());
     REQUIRE_THROWS(diag->set_computed_field(f));
     input_fields.emplace(name,f);
