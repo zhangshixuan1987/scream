@@ -103,13 +103,15 @@ public:
   // These are the three main interfaces:
   //   - the initialize method sets up all the stuff the process needs in order to run,
   //     including arrays/views, parameters, and precomputed stuff.
-  //   - the run method time-advances the process by one time step, provided in seconds.
+  //   - the run method time-advances the process by one time step. The two timesteps
+  //     are, respectively, the timestep of the whole atmosphere, and the timestep
+  //     that this process should advance by.
   //   - the finalize method makes sure, if necessary, that all resources are freed.
   // TODO: should we check that initialize/finalize are called once per simulation?
   //       Whether it's a needed check depends on what resources we init/free, and how.
   // TODO: should we check that initialize has been called, when calling run/finalize?
   void initialize (const std::shared_ptr<const TimeStamp>& t0, const RunType run_type);
-  void run (const int dt);
+  void run (const int dt_atm, const int dt_process);
   void finalize   (/* what inputs? */);
 
   // Return the MPI communicator
@@ -345,7 +347,7 @@ protected:
 
   // Override this method to define how the derived runs forward one step
   // (of size dt). This method is called before the timestamp is updated.
-  virtual void run_impl(const int dt) = 0;
+  virtual void run_impl(const int dt_atm, const int dt_process) = 0;
 
   // Override this method to finalize the derived class
   virtual void finalize_impl(/* what inputs? */) = 0;

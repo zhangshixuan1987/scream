@@ -54,8 +54,11 @@ initialize (const std::shared_ptr<const TimeStamp>& t0, const RunType run_type) 
   }
 }
 
-void AtmosphereProcess::run (const int dt) {
+void AtmosphereProcess::run (const int dt_atm, const int dt_process) {
   start_timer (m_timer_prefix + this->name() + "::run");
+
+  m_dt_atm = dt_atm;
+
   if (m_params.get("Enable Precondition Checks", true)) {
     // Run 'pre-condition' property checks stored in this AP
     run_precondition_checks();
@@ -68,10 +71,19 @@ void AtmosphereProcess::run (const int dt) {
       "  - Time step    : " + std::to_string(dt) + "\n");
 
   // Let the derived class do the actual run
-  auto dt_sub = dt / m_num_subcycles;
+  auto dt_sub = dt_process / m_num_subcycles;
   for (m_subcycle_iter=0; m_subcycle_iter<m_num_subcycles; ++m_subcycle_iter) {
-    run_impl(dt_sub);
+    m_atm_logger->info(name() + ": running iter " + std::to_string(m_subcycle_iter) + ", t=" + timestamp().to_string() +"\n");
+    run_impl(dt_atm,dt_sub);
     m_time_stamp += dt_sub;
+  }
+
+  // If running (A,B), with B subcycled, and they both update field F, then
+  // the timestamp of F after A will be atm_timestamp+dt_atm. But during the
+  // first subcycling iter, B will be trying to update F's timestamp to something
+  // like atm_timestamp+dt_atm/N, effectively "rewinding" time, which is not allowed.
+  // So only update timestamps once all subcycling is done.
+  if (atm_timestamp()==timestamp() {
     update_time_stamps ();
   }
 
