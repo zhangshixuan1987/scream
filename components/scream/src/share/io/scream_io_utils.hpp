@@ -1,9 +1,12 @@
 #ifndef SCREAM_IO_UTILS_HPP
 #define SCREAM_IO_UTILS_HPP
 
+#include "share/field/field_tag.hpp"
 #include "share/util/scream_time_stamp.hpp"
+
 #include "ekat/util/ekat_string_utils.hpp"
 #include "ekat/mpi/ekat_comm.hpp"
+
 #include <string>
 
 namespace scream
@@ -78,6 +81,53 @@ std::string find_filename_in_rpointer (
     const bool model_restart,
     const ekat::Comm& comm,
     const util::TimeStamp& run_t0);
+
+// The strings returned by e2str(const FieldTag&) are different from
+// what existing nc files are already using. Besides upper/lower case
+// differences, the column dimension (COL) is 'ncol' in nc files,
+// but we'd like to keep 'COL' when printing our layouts, so we
+// create this other mini helper function to get the name of a tag
+// that is compatible with nc files.
+
+inline std::string get_io_dim_name (const FieldTag& t, const int extent) {
+  using namespace ShortFieldTagsNames;
+
+  std::string name = "";
+  switch(t) {
+    case EL:
+      name = "elem";
+      break;
+    case LEV:
+      name = "lev";
+      break;
+    case ILEV:
+      name = "ilev";
+      break;
+    case COL:
+      name = "ncol";
+      break;
+    case GP:
+      name = "gp";
+      break;
+    case CMP:
+      name = "dim" + std::to_string(extent);
+      break;
+    // Added for rrtmgp - TODO revisit this paradigm, see comment in field_tag.hpp
+    case NGAS:
+      name = "ngas";
+      break;
+    case SWBND:
+      name = "swband";
+      break;
+    case LWBND:
+      name = "lwband";
+      break;
+    default:
+      EKAT_ERROR_MSG("Error! Field tag not supported in netcdf files.");
+  }
+
+  return name;
+}
 
 } // namespace scream
 #endif // SCREAM_IO_UTILS_HPP

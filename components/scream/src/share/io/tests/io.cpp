@@ -129,8 +129,7 @@ TEST_CASE("input_output_basic","io")
   Int num_levs = 2 + SCREAM_SMALL_PACK_SIZE;
 
   // Initialize the pio_subsystem for this test:
-  MPI_Fint fcomm = MPI_Comm_c2f(io_comm.mpi_comm());  // MPI communicator group used for I/O.  In our simple test we use MPI_COMM_WORLD, however a subset could be used.
-  scorpio::eam_init_pio_subsystem(fcomm);   // Gather the initial PIO subsystem data creater by component coupler
+  scorpio::init(io_comm);
 
   // First set up a field manager and grids manager to interact with the output functions
   auto gm = get_test_gm(io_comm,num_gcols,num_levs);
@@ -236,10 +235,9 @@ TEST_CASE("input_output_basic","io")
   // Test that pio_inq_dimlen is correct, using a file from one of the above parameter lists.
   {
     auto test_filename = ins_params.get<std::string>("Filename");
-    scorpio::register_file(test_filename,scorpio::Read);
-    Int test_gcols_len = scorpio::get_dimlen_c2f(test_filename.c_str(),"ncol");
-    REQUIRE(test_gcols_len==num_gcols);
-    scorpio::eam_pio_closefile(test_filename);
+    scorpio::register_file(test_filename,scorpio::FileMode::Read);
+    REQUIRE(scorpio::get_dim_len(test_filename,"ncol")==num_gcols);
+    scorpio::closefile(test_filename);
   }
 
   auto f1 = field_manager->get_field("field_1");
@@ -360,7 +358,7 @@ TEST_CASE("input_output_basic","io")
   multi_input.finalize();
 
   // All Done
-  scorpio::eam_pio_finalize();
+  scorpio::finalize();
 }
 
 /*===================================================================================================*/

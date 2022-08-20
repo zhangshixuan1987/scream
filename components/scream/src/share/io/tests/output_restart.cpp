@@ -60,8 +60,7 @@ TEST_CASE("output_restart","io")
   const auto& out_fields = field_manager->get_groups_info().at("output")->m_fields_names;
 
   // Initialize the pio_subsystem for this test:
-  MPI_Fint fcomm = MPI_Comm_c2f(io_comm.mpi_comm());
-  scorpio::eam_init_pio_subsystem(fcomm);
+  scorpio::init(io_comm);
 
   // Timestamp of the simulation initial time
   util::TimeStamp t0 ({2000,1,1},{0,0,0});
@@ -151,7 +150,7 @@ TEST_CASE("output_restart","io")
   output_manager_res.finalize();
 
   // Finalize everything
-  scorpio::eam_pio_finalize();
+  scorpio::finalize();
 } 
 
 /*=============================================================================================*/

@@ -114,6 +114,7 @@ public:
   using gm_type       = GridsManager;
   using remapper_type = AbstractRemapper;
   using atm_diag_type = AtmosphereDiagnostic;
+  using offset_t      = scorpio::offset_t;
 
   using KT = KokkosTypes<DefaultDevice>;
   template<int N>
@@ -151,12 +152,11 @@ protected:
   void set_field_manager (const std::shared_ptr<const fm_type>& field_mgr);
   void set_grid (const std::shared_ptr<const AbstractGrid>& grid);
 
-  void register_dimensions(const std::string& name);
-  void register_variables(const std::string& filename);
-  void set_degrees_of_freedom(const std::string& filename);
-  std::vector<scorpio::offset_t> get_var_dof_offsets (const FieldLayout& layout);
+  std::vector<offset_t> get_var_dof_offsets (const FieldLayout& layout);
+  void register_var_specs(const std::string& var_name);
   void register_views();
   Field get_field(const std::string& name, const bool eval_diagnostic = false);
+  std::vector<std::string> get_dims_names (const FieldLayout& fl) const;
   void set_diagnostics();
 
   // --- Internal variables --- //
@@ -173,10 +173,13 @@ protected:
   OutputAvgType     m_avg_type;
 
   // Internal maps to the output fields, how the columns are distributed, the file dimensions and the global ids.
-  std::vector<std::string>                              m_fields_names;
-  std::map<std::string,FieldLayout>                     m_layouts;
-  std::map<std::string,int>                             m_dofs;
   std::map<std::string,int>                             m_dims;
+
+  std::vector<std::string>                              m_fields_names;
+  std::map<std::string,FieldLayout>                     m_fields_layouts;
+  std::map<std::string,std::vector<offset_t>>           m_fields_offsets;
+  std::map<std::string,std::vector<std::string>>        m_fields_dims;
+
   std::map<std::string,std::shared_ptr<atm_diag_type>>  m_diagnostics;
 
   // Local views of each field to be used for "averaging" output and writing to file.

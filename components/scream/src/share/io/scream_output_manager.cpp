@@ -159,8 +159,6 @@ void OutputManager::setup_globals_map (const globals_map_t& globals) {
 /*===============================================================================================*/
 void OutputManager::run(const util::TimeStamp& timestamp)
 {
-  using namespace scorpio;
-
   // Check if we need to open a new file
   ++m_output_control.nsteps_since_last_write;
   ++m_checkpoint_control.nsteps_since_last_write;
@@ -186,24 +184,20 @@ void OutputManager::run(const util::TimeStamp& timestamp)
                            : (m_is_model_restart_output ? ".r" : "");
       filename = compute_filename (control,filespecs,suffix,timestamp);
 
-      // Register new netCDF file for output. First, check no other output managers
-      // are trying to write on the same file
-      EKAT_REQUIRE_MSG (not is_file_open_c2f(filename.c_str(),Write),
-          "Error! File '" + filename + "' is currently open for write. Cannot share with other output managers.\n");
-      register_file(filename,Write);
+      scorpio::register_file(filename,scorpio::FileMode::Write);
 
       // Note: time has an unknown length. Setting its "length" to 0 tells the scorpio to
       // set this dimension as having an 'unlimited' length, thus allowing us to write
       // as many timesnaps to file as we desire.
-      register_dimension(filename,"time","time",0);
+      scorpio::register_dimension(filename,"time",0);
 
       // Register time as a variable.
       auto time_units="days since " + m_case_t0.get_date_string() + " " + m_case_t0.get_time_string();
-      register_variable(filename,"time","time",time_units,1,{"time"}, scorpio::nctype("double"),"time");
+      scorpio::register_variable(filename,"time",time_units,{"time"}, "double");
 #ifdef SCREAM_HAS_LEAP_YEAR
-      set_variable_metadata (filename,"time","calendar","gregorian");
+      scorpio::set_attribute (filename,"time","calendar",std::string("gregorian"));
 #else
-      set_variable_metadata (filename,"time","calendar","noleap");
+      scorpio::set_attribute (filename,"time","calendar",std::string("noleap"));
 #endif
 
       // Make all output streams register their dims/vars
@@ -211,16 +205,12 @@ void OutputManager::run(const util::TimeStamp& timestamp)
         it->setup_output_file(filename);
       }
 
-      // Set degree of freedom for "time"
-      std::int64_t time_dof[1] = {0};
-      set_dof(filename,"time",0,time_dof);
-
       // Finish the definition phase for this file.
-      eam_pio_enddef (filename); 
+      scorpio::enddef (filename); 
       auto t0_date = m_case_t0.get_date()[0]*10000 + m_case_t0.get_date()[1]*100 + m_case_t0.get_date()[2];
       auto t0_time = m_case_t0.get_time()[0]*10000 + m_case_t0.get_time()[1]*100 + m_case_t0.get_time()[2];
-      set_int_attribute_c2f(filename.c_str(),"start_date",t0_date);
-      set_int_attribute_c2f(filename.c_str(),"start_time",t0_time);
+      scorpio::set_attribute(filename,"start_date",t0_date);
+      scorpio::set_attribute(filename,"start_time",t0_time);
       filespecs.is_open = true;
     }
 
@@ -236,10 +226,10 @@ void OutputManager::run(const util::TimeStamp& timestamp)
     }
 
     // Update time and nsteps in the output file
-    pio_update_time(filename,timestamp.days_from(m_case_t0));
+    scorpio::update_time(filename,timestamp.days_from(m_case_t0));
     if (m_is_model_restart_output) {
       // Only write nsteps on model restart
-      set_int_attribute_c2f(filename.c_str(),"nsteps",timestamp.get_num_steps());
+      scorpio::set_attribute(filename,"nsteps",timestamp.get_num_steps());
     }
   }
 
@@ -259,7 +249,7 @@ void OutputManager::run(const util::TimeStamp& timestamp)
       const auto& any = type_any.second;
       if (type=="int") {
         const int& value = ekat::any_cast<int>(any);
-        set_int_attribute_c2f(filename.c_str(),name.c_str(),value);
+        scorpio::set_attribute(filename,name,value);
       } else {
         EKAT_ERROR_MSG ("Error! Unsupported global attribute type.\n"
             " - file name  : " + filename + "\n"
@@ -278,7 +268,7 @@ void OutputManager::run(const util::TimeStamp& timestamp)
 
     // Check if we need to close the output file
     if (filespecs.file_is_full()) {
-      eam_pio_closefile(filename);
+      scorpio::closefile(filename);
       filespecs.num_snapshots_in_file = 0;
       filespecs.is_open = false;
     }

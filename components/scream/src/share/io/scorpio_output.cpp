@@ -135,7 +135,7 @@ void AtmosphereOutput::restart (const std::string& filename)
   res_params.set("Field Names",m_fields_names);
   res_params.set<std::string>("Floating Point Precision","real");
 
-  AtmosphereInput hist_restart (res_params,m_io_grid,m_host_views_1d,m_layouts);
+  AtmosphereInput hist_restart (res_params,m_io_grid,m_host_views_1d,m_fields_layouts);
   hist_restart.read_variables();
   hist_restart.finalize();
   for (auto& it : m_host_views_1d) {
@@ -152,7 +152,7 @@ void AtmosphereOutput::init()
   set_diagnostics();
 
   for (const auto& var_name : m_fields_names) {
-    register_dimensions(var_name);
+    register_var_specs(var_name);
   }
 
   // Now that the fields have been gathered register the local views which will be used to determine output data to be written.
@@ -190,7 +190,7 @@ void AtmosphereOutput::run (const std::string& filename, const bool is_write_ste
   for (auto const& name : m_fields_names) {
     // Get all the info for this field.
     const auto  field = get_field(name,true); // If diagnostic, must evaluate it
-    const auto& layout = m_layouts.at(name);
+    const auto& layout = m_fields_layouts.at(name);
     const auto& dims = layout.dims();
     const auto  rank = layout.rank();
 
@@ -297,7 +297,7 @@ void AtmosphereOutput::run (const std::string& filename, const bool is_write_ste
       // Bring data to host
       auto view_host = m_host_views_1d.at(name);
       Kokkos::deep_copy (view_host,view_dev);
-      grid_write_data_array(filename,name,view_host.data());
+      write_variable(filename,name,view_host.data());
     }
   }
 } // run
@@ -366,44 +366,41 @@ set_grid (const std::shared_ptr<const AbstractGrid>& grid)
   m_io_grid = grid;
 }
 
-void AtmosphereOutput::register_dimensions(const std::string& name)
+void AtmosphereOutput::register_var_specs(const std::string& var_name)
 {
-/* 
- * Checks that the dimensions associated with a specific variable will be registered with IO file.
- * INPUT:
- *   field_manager: is a pointer to the field_manager for this simulation.
- *   name: is a string name of the variable who is to be added to the list of variables in this IO stream.
- */
-  using namespace scorpio;
-
   // Store the field layout
-  const auto& fid = get_field(name).get_header().get_identifier();
+  const auto& fid = get_field(var_name).get_header().get_identifier();
   const auto& layout = fid.get_layout();
-  m_layouts.emplace(name,layout);
+  m_fields_layouts.emplace(var_name,layout);
 
-  // Now check taht all the dims of this field are already set to be registered.
+  // Store dim names and (global) extents
+  auto& var_dims = m_fields_dims[var_name];
+  var_dims.push_back("time");
   for (int i=0; i<layout.rank(); ++i) {
-    // check tag against m_dims map.  If not in there, then add it.
-    const auto& tags = layout.tags();
-    const auto& dims = layout.dims();
-    const auto tag_name = get_nc_tag_name(tags[i],dims[i]);
-    auto tag_loc = m_dims.find(tag_name);
-    auto is_partitioned = m_io_grid->get_partitioned_dim_tag()==tags[i];
-    if (tag_loc == m_dims.end()) {
-      int tag_len = 0;
-      if(tags[i] == m_io_grid->get_partitioned_dim_tag()) {
-        // This is the dimension that is partitioned across ranks.
-        tag_len = m_io_grid->get_partitioned_dim_global_size();
-      } else {
-        tag_len = layout.dim(i);
-      }
-      m_dims.emplace(std::make_pair(get_nc_tag_name(tags[i],dims[i]),tag_len));
+    const auto tag = layout.tag(i);
+    const auto dim = layout.dim(i);
+    const auto is_partitioned = m_io_grid->get_partitioned_dim_tag()==tag;
+    const auto dim_name = get_io_dim_name(tag,dim); 
+    const auto dim_len  = is_partitioned
+                        ? m_io_grid->get_partitioned_dim_global_size()
+                        : dim;
+    if (m_dims.find(dim_name)==m_dims.end()) {
+      m_dims[dim_name] = dim_len;
     } else {  
-      EKAT_REQUIRE_MSG(m_dims.at(tag_name)==dims[i] or is_partitioned,
-        "Error! Dimension " + tag_name + " on field " + name + " has conflicting lengths");
+      EKAT_REQUIRE_MSG(m_dims[dim_name]==dim_len,
+        "Error! Dimension has conflicting lengths.\n"
+        " - field var_name: " + var_name + "\n"
+        " - dim var_name  : " + dim_name + "\n"
+        " - dim len       : " + std::to_string(dim_len) + "\n");
     }
+
+    var_dims.push_back(dim_name);
   }
-} // register_dimensions
+
+  // Store offsets (in the global array)
+  m_fields_offsets[var_name] = get_var_dof_offsets(layout);
+
+}
 /* ---------------------------------------------------------- */
 void AtmosphereOutput::register_views()
 {
@@ -411,10 +408,6 @@ void AtmosphereOutput::register_views()
   for (auto const& name : m_fields_names) {
     auto field = get_field(name);
     bool is_diagnostic = (m_diagnostics.find(name) != m_diagnostics.end());
-
-    // These local views are really only needed if the averaging time is not 'Instant',
-    // to store running tallies for the average operation. However, we create them
-    // also for Instant avg_type, for simplicity later on.
 
     // If we have an 'Instant' avg type, we can alias the 1d views with the
     // views of the field, provided that the field does not have padding,
@@ -429,7 +422,7 @@ void AtmosphereOutput::register_views()
         field.get_header().get_parent().expired() &&
         not is_diagnostic;
 
-    const auto size = m_layouts.at(name).size();
+    const auto size = m_fields_layouts.at(name).size();
     if (can_alias_field_view) {
       // Alias field's data, to save storage.
       m_dev_views_1d.emplace(name,view_1d_dev(field.get_internal_view_data<Real,Device>(),size));
@@ -460,46 +453,6 @@ void AtmosphereOutput::register_views()
   }
 }
 /* ---------------------------------------------------------- */
-void AtmosphereOutput::register_variables(const std::string& filename)
-{
-  using namespace scorpio;
-
-  // Cycle through all fields and register.
-  for (auto const& name : m_fields_names) {
-    auto field = get_field(name);
-    auto& fid  = field.get_header().get_identifier();
-    // Determine the IO-decomp and construct a vector of dimension ids for this variable:
-    std::string io_decomp_tag = "Real";  // Note, for now we only assume REAL variables.  This may change in the future.
-    std::vector<std::string> vec_of_dims;
-    const auto& layout = fid.get_layout();
-    std::string units = to_string(fid.get_units());
-    for (int i=0; i<fid.get_layout().rank(); ++i) {
-      const auto tag_name = get_nc_tag_name(layout.tag(i), layout.dim(i));
-      // Concatenate the dimension string to the io-decomp string
-      io_decomp_tag += "-" + tag_name;
-      // If tag==CMP, we already attached the length to the tag name
-      if (layout.tag(i)!=ShortFieldTagsNames::CMP) {
-        io_decomp_tag += "_" + std::to_string(layout.dim(i));
-      }
-      vec_of_dims.push_back(tag_name); // Add dimensions string to vector of dims.
-    }
-    // TODO: Do we expect all vars to have a time dimension?  If not then how to trigger? 
-    // Should we register dimension variables (such as ncol and lat/lon) elsewhere
-    // in the dimension registration?  These won't have time. 
-    io_decomp_tag += "-time";
-    // TODO: Reverse order of dimensions to match flip between C++ -> F90 -> PIO,
-    // may need to delete this line when switching to fully C++/C implementation.
-    std::reverse(vec_of_dims.begin(),vec_of_dims.end());
-    vec_of_dims.push_back("time");  //TODO: See the above comment on time.
-
-     // TODO  Need to change dtype to allow for other variables.
-    // Currently the field_manager only stores Real variables so it is not an issue,
-    // but in the future if non-Real variables are added we will want to accomodate that.
-    register_variable(filename, name, name, units, vec_of_dims.size(),
-                      vec_of_dims, scorpio::nctype(m_fp_precision), io_decomp_tag);
-  }
-} // register_variables
-/* ---------------------------------------------------------- */
 std::vector<scorpio::offset_t>
 AtmosphereOutput::get_var_dof_offsets(const FieldLayout& layout)
 {
@@ -519,102 +472,66 @@ AtmosphereOutput::get_var_dof_offsets(const FieldLayout& layout)
   //       All we need to do in this routine is to compute the offset of all the entries
   //       of the MPI-local array w.r.t. the global array. So long as the offsets are in
   //       the same order as the corresponding entry in the data to be read/written, we're good.
-  if (layout.has_tag(ShortFieldTagsNames::COL)) {
-    const int num_cols = m_io_grid->get_num_local_dofs();
+  const auto decomp_tag = m_io_grid->get_partitioned_dim_tag();
+  const auto layout_2d  = m_io_grid->get_2d_scalar_layout();
+  if (layout.has_tag(decomp_tag)) {
 
-    // Note: col_size might be *larger* than the number of vertical levels, or even smaller.
-    //       E.g., (ncols,2,nlevs), or (ncols,2) respectively.
+    const auto dofs = m_io_grid->get_dofs_gids_host();
+
+    const auto num_cols = m_io_grid->get_num_local_dofs();
+    const auto min_gid  = m_io_grid->get_global_min_dof_gid();
+
     scorpio::offset_t col_size = layout.size() / num_cols;
-
-    auto dofs = m_io_grid->get_dofs_gids();
-    auto dofs_h = Kokkos::create_mirror_view(dofs);
-    Kokkos::deep_copy(dofs_h,dofs);
-
-    // Precompute this *before* the loop, since it involves expensive collectives.
-    // Besides, the loop might have different length on different ranks, so
-    // computing it inside might cause deadlocks.
-    auto min_gid = m_io_grid->get_global_min_dof_gid();
     for (int icol=0; icol<num_cols; ++icol) {
       // Get chunk of var_dof to fill
       auto start = var_dof.begin()+icol*col_size;
       auto end   = start+col_size;
 
       // Compute start of the column offset, then fill column adding 1 to each entry
-      auto gid = dofs_h(icol);
+      auto gid = dofs(icol);
       auto offset = (gid-min_gid)*col_size;
       std::iota(start,end,offset);
     }
-  } else if (layout.has_tag(ShortFieldTagsNames::EL)) {
-    auto layout2d = m_io_grid->get_2d_scalar_layout();
-    const int num_my_elems = layout2d.dim(0);
-    const int ngp = layout2d.dim(1);
-    const int num_cols = num_my_elems*ngp*ngp;
-
-    // Note: col_size might be *larger* than the number of vertical levels, or even smaller.
-    //       E.g., (ncols,2,nlevs), or (ncols,2) respectively.
-    scorpio::offset_t col_size = layout.size() / num_cols;
-
-    auto dofs = m_io_grid->get_dofs_gids();
-    auto dofs_h = Kokkos::create_mirror_view(dofs);
-    Kokkos::deep_copy(dofs_h,dofs);
-
-    // Precompute this *before* the loop, since it involves expensive collectives.
-    // Besides, the loop might have different length on different ranks, so
-    // computing it inside might cause deadlocks.
-    auto min_gid = m_io_grid->get_global_min_dof_gid();
-    for (int ie=0,icol=0; ie<num_my_elems; ++ie) {
-      for (int igp=0; igp<ngp; ++igp) {
-        for (int jgp=0; jgp<ngp; ++jgp,++icol) {
-          // Get chunk of var_dof to fill
-          auto start = var_dof.begin()+icol*col_size;
-          auto end   = start+col_size;
-
-          // Compute start of the column offset, then fill column adding 1 to each entry
-          auto gid = dofs_h(icol);
-          auto offset = (gid-min_gid)*col_size;
-          std::iota(start,end,offset);
-    }}}
   } else {
-    // This field is *not* defined over columns, so it is not partitioned.
+    // This field is *not* decomposed
     std::iota(var_dof.begin(),var_dof.end(),0);
-  } 
+  }
 
   return var_dof; 
 }
-/* ---------------------------------------------------------- */
-void AtmosphereOutput::set_degrees_of_freedom(const std::string& filename)
-{
-  using namespace scorpio;
-  using namespace ShortFieldTagsNames;
-
-  // Cycle through all fields and set dof.
-  for (auto const& name : m_fields_names) {
-    auto field = get_field(name);
-    const auto& fid  = field.get_header().get_identifier();
-    auto var_dof = get_var_dof_offsets(fid.get_layout());
-    set_dof(filename,name,var_dof.size(),var_dof.data());
-    m_dofs.emplace(std::make_pair(name,var_dof.size()));
-  }
-
-  /* TODO: 
-   * Gather DOF info directly from grid manager
-  */
-} // set_degrees_of_freedom
 /* ---------------------------------------------------------- */
 void AtmosphereOutput::setup_output_file(const std::string& filename)
 {
   using namespace scream::scorpio;
 
-  // Register dimensions with netCDF file.
+  // Register dimensions
   for (auto it : m_dims) {
-    register_dimension(filename,it.first,it.first,it.second);
+    register_dimension(filename,it.first,it.second);
   }
 
-  // Register variables with netCDF file.  Must come after dimensions are registered.
-  register_variables(filename);
+  // Register variables/decompositions
+  for (auto const& name : m_fields_names) {
+    const auto& fid = get_field(name).get_header().get_identifier();
+    std::string dtype;
+    if (fid.data_type()==DataType::IntType) {
+      dtype = "int";
+    } else {
+      // Floating point data. Use internal fp precision
+      dtype = m_fp_precision;
+    }
 
-  // Set the offsets of the local dofs in the global vector.
-  set_degrees_of_freedom(filename);
+    // Var
+    register_variable(filename, name, name, fid.get_units().get_string(),
+                      m_fields_dims.at(name), dtype);
+
+    std::vector<int> dims_glens;
+    for (const auto& dn : m_fields_dims.at(name)) {
+      dims_glens.push_back(m_dims.at(dn));
+    }
+
+    // Decomp
+    register_decomp(dtype,m_fields_dims.at(name),dims_glens,m_fields_offsets.at(name));
+  }
 }
 /* ---------------------------------------------------------- */
 // General get_field routine for output.
@@ -666,6 +583,18 @@ void AtmosphereOutput::set_diagnostics()
     //       output the diagnostic without computing it, we'll get an error.
     diag->initialize(util::TimeStamp(),RunType::Initial);
   }
+}
+
+std::vector<std::string>
+AtmosphereOutput::get_dims_names (const FieldLayout& fl) const
+{
+  // We always add time
+  std::vector<std::string> dims_names(1,"time");
+  for (int i=0; i<fl.rank(); ++i) {
+    const auto tag_name = get_io_dim_name(fl.tag(i), fl.dim(i));
+    dims_names.push_back(tag_name);
+  }
+  return dims_names;
 }
 
 } // namespace scream
