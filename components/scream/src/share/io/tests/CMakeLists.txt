@@ -13,6 +13,10 @@ configure_file(io_test_max.yaml io_test_max.yaml)
 configure_file(io_test_min.yaml io_test_min.yaml)
 configure_file(io_test_multisnap.yaml io_test_multisnap.yaml)
 
+CreateUnitTest(scorpio_interface "scorpio_interface_tests.cpp" scream_io LABELS "io"
+  MPI_RANKS 1 ${SCREAM_TEST_MAX_RANKS}
+)
+
 CreateUnitTest(io_test "io.cpp" scream_io LABELS "io"
   MPI_RANKS 1 ${SCREAM_TEST_MAX_RANKS}
 )
