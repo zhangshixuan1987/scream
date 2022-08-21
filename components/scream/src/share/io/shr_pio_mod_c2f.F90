@@ -1,4 +1,4 @@
-module scream_scorpio_interface_c2f
+module shr_pio_mod_c2f
   use iso_c_binding, only : c_int
 
   ! This modules contains a few C-interoperable routines, which allow C code
@@ -40,4 +40,4 @@ contains
 
     format_id = shr_pio_getioformat(atm_id)
   end function get_io_format
-end module scream_scorpio_interface_c2f
+end module shr_pio_mod_c2f

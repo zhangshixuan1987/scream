@@ -9,7 +9,7 @@ set(SCREAM_SCORPIO_SRCS
 
 if (SCREAM_CIME_BUILD)
   list (APPEND SCREAM_SCORPIO_SRCS
-    scream_scorpio_interface_c2f.F90
+    shr_pio_mod_c2f.F90
   )
 endif()
 
