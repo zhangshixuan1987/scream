@@ -156,7 +156,6 @@ protected:
   void register_var_specs(const std::string& var_name);
   void register_views();
   Field get_field(const std::string& name, const bool eval_diagnostic = false);
-  std::vector<std::string> get_dims_names (const FieldLayout& fl) const;
   void set_diagnostics();
 
   // --- Internal variables --- //

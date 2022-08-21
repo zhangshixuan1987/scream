@@ -184,7 +184,7 @@ void OutputManager::run(const util::TimeStamp& timestamp)
                            : (m_is_model_restart_output ? ".r" : "");
       filename = compute_filename (control,filespecs,suffix,timestamp);
 
-      scorpio::register_file(filename,scorpio::FileMode::Write);
+      scorpio::open_file(filename,scorpio::FileMode::Write);
 
       // Note: time has an unknown length. Setting its "length" to 0 tells the scorpio to
       // set this dimension as having an 'unlimited' length, thus allowing us to write
@@ -268,7 +268,7 @@ void OutputManager::run(const util::TimeStamp& timestamp)
 
     // Check if we need to close the output file
     if (filespecs.file_is_full()) {
-      scorpio::closefile(filename);
+      scorpio::release_file(filename);
       filespecs.num_snapshots_in_file = 0;
       filespecs.is_open = false;
     }
@@ -283,6 +283,9 @@ void OutputManager::finalize()
   // Swapping with an empty mgr is the easiest way to cleanup.
   OutputManager other;
   std::swap(*this,other);
+
+  // Free all decomps no longer associated with any variable
+  scorpio::free_unused_decomps();
 }
 
 long long OutputManager::res_dep_memory_footprint () const {

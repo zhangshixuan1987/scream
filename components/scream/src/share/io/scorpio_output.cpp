@@ -520,17 +520,19 @@ void AtmosphereOutput::setup_output_file(const std::string& filename)
       dtype = m_fp_precision;
     }
 
+    const auto& dims = m_fields_dims.at(name);
     // Var
     register_variable(filename, name, name, fid.get_units().get_string(),
-                      m_fields_dims.at(name), dtype);
+                      dims, dtype);
 
     std::vector<int> dims_glens;
+    dims_glens.push_back(1);  // We always read/write 1 time slice
     for (const auto& dn : m_fields_dims.at(name)) {
       dims_glens.push_back(m_dims.at(dn));
     }
 
     // Decomp
-    register_decomp(dtype,m_fields_dims.at(name),dims_glens,m_fields_offsets.at(name));
+    register_decomp(dtype,dims,dims_glens,m_fields_offsets.at(name));
   }
 }
 /* ---------------------------------------------------------- */
@@ -583,18 +585,6 @@ void AtmosphereOutput::set_diagnostics()
     //       output the diagnostic without computing it, we'll get an error.
     diag->initialize(util::TimeStamp(),RunType::Initial);
   }
-}
-
-std::vector<std::string>
-AtmosphereOutput::get_dims_names (const FieldLayout& fl) const
-{
-  // We always add time
-  std::vector<std::string> dims_names(1,"time");
-  for (int i=0; i<fl.rank(); ++i) {
-    const auto tag_name = get_io_dim_name(fl.tag(i), fl.dim(i));
-    dims_names.push_back(tag_name);
-  }
-  return dims_names;
 }
 
 } // namespace scream

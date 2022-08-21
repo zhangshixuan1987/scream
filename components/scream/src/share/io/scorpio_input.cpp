@@ -22,7 +22,7 @@ AtmosphereInput (const ekat::Comm& comm,
   // This ensures that the nc file is open, even if init() doesn't
   // get called. This allows users to read global scalar values from
   // an nc file, by easily creating an AtmosphereInput on the fly.
-  scorpio::register_file(m_filename,scorpio::FileMode::Read);
+  scorpio::open_file(m_filename,scorpio::FileMode::Read);
 
   // TODO: check that comm is compatible with the pio subsystem comm?
 }
@@ -386,7 +386,7 @@ set_views (const std::map<std::string,view_1d_host>& host_views_1d,
 /* ---------------------------------------------------------- */
 void AtmosphereInput::finalize() 
 {
-  scorpio::closefile(m_filename);
+  scorpio::release_file(m_filename);
 
   m_field_mgr = nullptr;
   m_io_grid   = nullptr;
@@ -398,7 +398,7 @@ void AtmosphereInput::finalize()
   m_inited_with_views = false;
   m_inited_with_fields = false;
 
-  // Free decomps (if needed)
+  // Free decomps no longer associated with any variable
   scorpio::free_unused_decomps();
 } // finalize
 

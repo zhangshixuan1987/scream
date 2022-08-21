@@ -235,9 +235,9 @@ TEST_CASE("input_output_basic","io")
   // Test that pio_inq_dimlen is correct, using a file from one of the above parameter lists.
   {
     auto test_filename = ins_params.get<std::string>("Filename");
-    scorpio::register_file(test_filename,scorpio::FileMode::Read);
+    scorpio::open_file(test_filename,scorpio::FileMode::Read);
     REQUIRE(scorpio::get_dim_len(test_filename,"ncol")==num_gcols);
-    scorpio::closefile(test_filename);
+    scorpio::release_file(test_filename);
   }
 
   auto f1 = field_manager->get_field("field_1");

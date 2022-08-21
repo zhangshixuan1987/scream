@@ -12,16 +12,100 @@ namespace scream {
 
 namespace detail {
 
-inline std::string get_att_name (int fid, int attnum) {
+inline int str2nctype (const std::string& type) {
+  if (type=="int") {
+    return PIO_INT;
+  } else if (type=="float" || type=="single") {
+    return PIO_FLOAT;
+  } else if (type=="char") {
+    return PIO_CHAR;
+  } else if (type=="double") {
+    return PIO_DOUBLE;
+  } else if (type=="real") {
+#if defined(SCREAM_DOUBLE_PRECISION)
+    return PIO_DOUBLE;
+#else
+    return PIO_FLOAT;
+#endif
+  } else {
+    EKAT_ERROR_MSG ("Error! Unrecognized/unsupported data type '" + type + "'.\n");
+  }
+}
+
+inline std::string nctype2str (const int nctype) {
+  std::string name;
+  for (std::string n : {"int","char","float","double"}) {
+    if (nctype==str2nctype(n)) {
+      name = n;
+    }
+  }
+  EKAT_REQUIRE_MSG (name!="",
+      "Error! Unrecognized/unsupported nctype: " + std::to_string(nctype) + "\n");
+  return name;
+}
+
+template<typename T>
+int get_nc_type () {
+  int nctype;
+  if (std::is_same<double,T>::value) {
+    nctype = PIO_DOUBLE;
+  } else if (std::is_same<int,T>::value) {
+    nctype = PIO_INT;
+  } else if (std::is_same<float,T>::value) {
+    nctype = PIO_FLOAT;
+  } else if (std::is_same<std::string,T>::value) {
+    nctype = PIO_CHAR;
+  } else {
+    EKAT_ERROR_MSG ("Error! Unsupported/unknown type.\n");
+  }
+  return nctype;
+}
+
+template<typename T>
+void resize (PIO_Offset /*len*/, T& /*att*/) {}
+template<>
+inline void resize<std::string> (PIO_Offset len, std::string& att) { att.resize(len); }
+
+template<typename T>
+int get_len (const T&) { return 1; }
+template<>
+inline int get_len<std::string> (const std::string& s) { return s.size(); }
+
+template<typename T>
+const void* get_data (const T& att) { return &att; }
+template<>
+inline const void* get_data<std::string> (const std::string& s) { return s.data(); }
+
+template<typename T>
+void* get_data_nonconst (T& att) { return &att; }
+template<>
+inline void* get_data_nonconst<std::string> (std::string& s) { return &s[0]; }
+
+inline std::string get_att_name (int fid, int varid, int attnum) {
   std::string name;
   name.resize(PIO_MAX_NAME);
-  int ierr = PIOc_inq_attname (fid, PIO_GLOBAL, attnum, &name[0]);
+  int ierr = PIOc_inq_attname (fid, varid, attnum, &name[0]);
   EKAT_REQUIRE_MSG (ierr==PIO_NOERR,
-      "Error! Could not inquire global attribute name.\n"
+      "Error! Could not inquire attribute name.\n"
       " - file id: " + std::to_string(fid) + "\n"
+      " - var id : " + std::to_string(varid) + "\n"
       " - att num: " + std::to_string(attnum) + "\n"
       " - pio err: " + std::to_string(ierr) + "\n");
+  // Remove all the \0 trailing chars 
+  name = name.c_str();
   return name;
+}
+
+inline int get_att_type (int fid, int varid, const char* name) {
+  int nctype;
+  int ierr = PIOc_inq_atttype (fid, varid, name, &nctype);
+  EKAT_REQUIRE_MSG (ierr==PIO_NOERR,
+      "Error! Could not inquire attribute type.\n"
+      " - file id : " + std::to_string(fid) + "\n"
+      " - var id  : " + std::to_string(varid) + "\n"
+      " - att name: " + name + "\n"
+      " - pio err : " + std::to_string(ierr) + "\n");
+  return nctype;
 }
 
 inline std::string get_dim_name (int fid, int dimid) {
@@ -34,6 +118,8 @@ inline std::string get_dim_name (int fid, int dimid) {
       " - file id: " + std::to_string(fid) + "\n"
       " - dim id : " + std::to_string(dimid) + "\n"
       " - pio err: " + std::to_string(ierr) + "\n");
+  // Remove all the \0 trailing chars 
+  name = name.c_str();
   return name;
 }
 
@@ -59,6 +145,8 @@ inline std::string get_var_name (int fid, int varid) {
       " - file id: " + std::to_string(fid) + "\n"
       " - var id : " + std::to_string(varid) + "\n"
       " - pio err: " + std::to_string(ierr) + "\n");
+  // Remove all the \0 trailing chars 
+  name = name.c_str();
   return name;
 }
 
@@ -84,8 +172,19 @@ inline int get_var_ndims (int fid, int varid) {
   return ndims;
 }
 
-inline std::vector<std::string> get_var_dims (int fid, int varid) {
-  const int ndims = detail::get_var_ndims(fid,varid);
+inline int get_var_natts (int fid, int varid) {
+  int natts, ierr;
+  ierr = PIOc_inq_varnatts (fid, varid, &natts);
+  EKAT_REQUIRE_MSG (ierr==PIO_NOERR,
+      "Error! Could not inquire variable number of attributes.\n"
+      " - file id: " + std::to_string(fid) + "\n"
+      " - var id : " + std::to_string(varid) + "\n"
+      " - pio err: " + std::to_string(ierr) + "\n");
+  return natts;
+}
+
+inline std::vector<int> get_var_dims (int fid, int varid) {
+  const int ndims = get_var_ndims(fid,varid);
   std::vector<int> dimids (ndims);
   int ierr;
   ierr = PIOc_inq_vardimid (fid, varid, dimids.data());
@@ -95,9 +194,25 @@ inline std::vector<std::string> get_var_dims (int fid, int varid) {
       " - var id : " + std::to_string(varid) + "\n"
       " - pio err: " + std::to_string(ierr) + "\n");
 
+  return dimids;
+}
+
+inline std::vector<std::string> get_var_dim_names (int fid, int varid) {
+  const auto dimids = get_var_dims(fid,varid);
+
   std::vector<std::string> dims;
   for (const auto& id : dimids) {
-    dims.push_back(detail::get_dim_name(fid,id));
+    dims.push_back(get_dim_name(fid,id));
+  }
+  return dims;
+}
+
+inline std::vector<int> get_var_dim_lens (int fid, int varid) {
+  const auto dimids = get_var_dims(fid,varid);
+
+  std::vector<int> dims;
+  for (const auto& id : dimids) {
+    dims.push_back(get_dim_len(fid,id));
   }
   return dims;
 }
@@ -115,7 +230,7 @@ struct IOEntity {
 
 struct IODecomp : IOEntity {
   int customers = 0;
-  int size = 0;
+  PIO_Offset size = 0;
 };
 
 struct IOVar : IOEntity {
@@ -129,11 +244,11 @@ using strptrmap_t = std::map<std::string,std::shared_ptr<T>>;
 struct IOFile : IOEntity {
   FileMode      mode;
   int customers = 0;
+  bool enddef = false;
 
   // File content
   strptrmap_t<IOEntity>   dims;
   strptrmap_t<IOVar>      vars;
-  strptrmap_t<IOEntity>   atts;
 
   const IOEntity& get_dim (const std::string& dname) const {
     EKAT_REQUIRE_MSG (dims.find(dname)!=dims.end(),
@@ -149,13 +264,6 @@ struct IOFile : IOEntity {
         "   - var  name: " + vname + "\n");
     return *vars.at(vname);
   }
-  const IOEntity& get_att (const std::string& attname) const {
-    EKAT_REQUIRE_MSG (atts.find(attname)!=atts.end(),
-        "Error! Could not find attribute in file.\n"
-        "   - file name: " + name + "\n"
-        "   - att  name: " + attname + "\n");
-    return *atts.at(attname);
-  }
 
   void load_all_entities_from_file () {
     int ierr, ndims, nvars, ngatts;
@@ -166,35 +274,52 @@ struct IOFile : IOEntity {
         " - pio err  : " + std::to_string(ierr) + "\n");
 
     // Add dims
-    for (int i=0; i<ndims; ++i) {
+    for (int idim=0; idim<ndims; ++idim) {
       auto dim = std::make_shared<IOEntity>();
-      dim->ncid = i;
+      dim->ncid = idim;
       dim->name = detail::get_dim_name(ncid,dim->ncid);
       dims[dim->name] = dim;
     }
 
     // Add vars
-    for (int i=0; i<nvars; ++i) {
+    for (int ivar=0; ivar<nvars; ++ivar) {
       auto var = std::make_shared<IOVar>();
-      var->ncid = i;
+      var->ncid = ivar;
       var->name = detail::get_var_name(ncid,var->ncid);
       vars[var->name] = var;
     }
+  }
 
-    // Add atts
-    for (int i=0; i<ngatts; ++i) {
-      auto att = std::make_shared<IOEntity>();
-      att->ncid = PIO_GLOBAL;
-      att->name = detail::get_att_name(ncid,i);
-      atts[att->name] = att;
+  void set_vars_decomps (const strptrmap_t<IODecomp>& decomps) {
+    // Adjust the number of customers of stored decomps
+    for (auto it : vars) {
+      auto& v = *it.second;
+      auto dim_names = detail::get_var_dim_names (ncid,v.ncid);
+      auto dim_lens  = detail::get_var_dim_lens  (ncid,v.ncid);
+      if (dim_names[0]=="time") {
+        // We always read/write one time slice at a time.
+        dim_lens[0] = 1;
+      }
+      auto dtype = detail::get_var_dtype (ncid,v.ncid);
+
+      auto decomp_tag = detail::nctype2str (dtype) + "."
+                      + ekat::join(dim_names,"-") + "."
+                      + ekat::join(dim_lens,"-");
+
+      auto d_it = decomps.find(decomp_tag);
+      if (d_it!=decomps.end()) {
+        auto decomp = d_it->second;
+        v.decomp = decomp;
+        ++decomp->customers;
+      }
     }
   }
 };
 
 // Internal singleton to persistently store some PIO stuff
-struct ScorpioSession {
-  static ScorpioSession& instance (const bool must_be_inited = true) {
-    static ScorpioSession s;
+struct IOSession {
+  static IOSession& instance (const bool must_be_inited = true) {
+    static IOSession s;
     if (must_be_inited) {
       EKAT_REQUIRE_MSG (s.iosysid>=0,
           "Error! PIO subsystem was expected to be already inited.\n");
@@ -232,7 +357,7 @@ struct ScorpioSession {
   void remove_file (const std::string fname);
 
 private:
-  ScorpioSession () = default;
+  IOSession () = default;
 };
 
 } // namespace scorpio

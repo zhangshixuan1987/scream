@@ -32,8 +32,8 @@ bool is_inited();
 void finalize ();
 
 // File handling
-void register_file (const std::string& filename, const FileMode mode);
-void closefile (const std::string& filename);
+void open_file (const std::string& filename, const FileMode mode);
+void release_file (const std::string& filename);
 
 void register_dimension (const std::string& filename,
                          const std::string& name,
@@ -51,7 +51,14 @@ void register_variable (const std::string& filename,
                         const std::string& units,
                         const std::vector<std::string>& dimensions,
                         const std::string& dtype) {
-  register_variable(filename,name,name,units,dimensions,dtype);
+  register_variable(filename,name,"",units,dimensions,dtype);
+}
+inline
+void register_variable (const std::string& filename,
+                        const std::string& name,
+                        const std::vector<std::string>& dimensions,
+                        const std::string& dtype) {
+  register_variable(filename,name,"","",dimensions,dtype);
 }
 
 void register_decomp (const std::string& dtype,
@@ -60,11 +67,10 @@ void register_decomp (const std::string& dtype,
                       const std::vector<offset_t>& my_offsets);
 
 void enddef (const std::string &filename);
-
+void redef (const std::string &filename);
 void free_unused_decomps ();
 
 // File queries
-bool is_file_open (const std::string& filename);
 int get_dim_len (const std::string& filename,
                  const std::string& dimname);
 
@@ -72,29 +78,44 @@ int get_dim_len (const std::string& filename,
 template<typename T>
 void set_attribute (const std::string& filename,
                     const std::string& varname,
-                    const std::string& att_name,
-                    const T& att_val);
+                    const std::string& attname,
+                    const T& attval);
 template<typename T>
 void set_attribute (const std::string& filename,
-                    const std::string& att_name,
-                    const T& att_val)
+                    const std::string& attname,
+                    const T& attval)
 {
   std::string global = "GLOBAL";
-  set_attribute(filename,global,att_name,att_val);
+  set_attribute(filename,global,attname,attval);
+}
+// Overload, since string literals are not caught
+template<std::size_t N>
+void set_attribute (const std::string& filename,
+                    const std::string& varname,
+                    const std::string& attname,
+                    const char (&attval)[N]) {
+  set_attribute<std::string>(filename,varname,attname,attval);
+}
+template<std::size_t N>
+void set_attribute (const std::string& filename,
+                    const std::string& attname,
+                    const char (&attval)[N]) {
+  set_attribute<std::string>(filename,attname,attval);
 }
 
 template<typename T>
 void get_attribute (const std::string& filename,
                     const std::string& varname,
-                    const std::string& att_name,
-                          T& att_val);
+                    const std::string& attname,
+                          T& attval);
+
 template<typename T>
 void get_attribute (const std::string& filename,
-                    const std::string& att_name,
-                          T& att_val)
+                    const std::string& attname,
+                          T& attval)
 {
   std::string global = "GLOBAL";
-  get_attribute(filename,global,att_name,att_val);
+  get_attribute(filename,global,attname,attval);
 }
 
 void update_time(const std::string &filename, const double time);
@@ -103,12 +124,19 @@ template<typename T>
 void read_variable (const std::string &filename,
                     const std::string &varname,
                     const int time_index,
-                          T* hbuf);
+                          T* buf);
+template<typename T>
+void read_variable (const std::string &filename,
+                    const std::string &varname,
+                          T* buf)
+{
+  read_variable (filename,varname,0,buf);
+}
 
 template<typename T>
 void write_variable (const std::string &filename,
                      const std::string &varname,
-                     const T* hbuf);
+                     const T* buf);
 
 } // namespace scorpio
 } // namespace scream
