@@ -38,7 +38,7 @@ macro (CreateScorpioTargets)
 
     # Create the interface library, and set target properties
     add_library (pioc INTERFACE)
-    target_link_libraries (pioc INTERFACE ${SCORPIO_C_LIB} gptl ${netcdf_c_lib})
+    target_link_libraries (pioc INTERFACE ${SCORPIO_C_LIB} gptl ${netcdf_c_lib} ${pnetcdf_lib})
     target_include_directories (pioc INTERFACE ${SCORPIO_INC_DIR} ${CSM_SHR_INCLUDE})
 
     # HACK: CIME only copies headers from the bld dir to the CSM_SHR_INCLUDE dir
