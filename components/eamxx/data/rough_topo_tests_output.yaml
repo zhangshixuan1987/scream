@@ -1,0 +1,31 @@
+%YAML 1.1
+---
+Casename: ${CASE}.scream.h0
+Averaging Type: Average
+Max Snapshots Per File: 1
+Fields:
+  Physics ${PHYSICS_GRID_TYPE}:
+    Field Names:
+      # HOMME
+      - omega
+      # SHOC + HOMME
+      # SHOC
+      # CLD
+      # P3
+      # SHOC + P3
+      # SHOC + P3 + RRTMGP + HOMME
+      # RRTMGP
+      # Surface Fluxes
+      - surf_mom_flux
+      - surf_mom_flux_U
+      - surf_mom_flux_V
+      # Diagnostics
+      - SeaLevelPressure
+      - PrecipTotalSurfMassFlux
+output_control:
+  Frequency: ${HIST_N}
+  frequency_units: ${HIST_OPTION}
+Checkpoint Control:
+  Frequency: ${REST_N}
+  frequency_units: ${REST_OPTION}
+...
