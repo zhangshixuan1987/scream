@@ -24,10 +24,12 @@ if (TEST_RANK_END GREATER TEST_RANK_START)
   list (APPEND TEST_NRANKS ${TEST_RANK_END})
 endif()
 
+message ("model restart start...")
 # Create a single executable for all the 3 runs
 CreateUnitTestExec(model_restart model_restart.cpp "${NEED_LIBS}")
 
 foreach (NRANKS IN ITEMS ${TEST_NRANKS})
+  message ("creatring model_xyz with NRANKS=${NRANKS}")
 
   # Create the baseline (run all 6 timsteps in a single run)
   CreateUnitTestFromExec(model_baseline model_restart
@@ -119,3 +121,4 @@ configure_file(${SCREAM_SRC_DIR}/dynamics/homme/tests/theta.nl
 # Ensure test input files are present in the data dir
 GetInputFile(scream/init/${EAMxx_tests_IC_FILE_72lev})
 GetInputFile(cam/topo/USGS-gtopo30_ne4np4_16x.c20160612.nc)
+message ("model restart end...")

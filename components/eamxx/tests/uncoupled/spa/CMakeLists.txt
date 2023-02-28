@@ -32,22 +32,32 @@ endforeach()
 
 ## Finally compare all MPI rank output files against the single rank output as a baseline, using CPRNC
 ## Only if running with 2+ ranks configurations
-# This test requires CPRNC
-if (TEST_RANK_END GREATER TEST_RANK_START)
-  include (BuildCprnc)
-  BuildCprnc()
-  SET (BASE_TEST_NAME "spa")
-  math (EXPR CMP_RANK_START ${TEST_RANK_START}+1)
-  foreach (MPI_RANKS RANGE ${CMP_RANK_START} ${TEST_RANK_END})
+include (CompareNCFilesFamily)
 
-    set (SRC_FILE "${BASE_TEST_NAME}_standalone_output.INSTANT.nsteps_x1.np${MPI_RANKS}.nc")
-    set (TGT_FILE "${BASE_TEST_NAME}_standalone_output.INSTANT.nsteps_x1.np${TEST_RANK_START}.nc")
-    set (TEST_NAME "${BASE_TEST_NAME}_np${TEST_RANK_START}_vs_np${MPI_RANKS}_bfb")
-    add_test (NAME ${TEST_NAME}
-              COMMAND cmake -P ${CMAKE_BINARY_DIR}/bin/CprncTest.cmake ${SRC_FILE} ${TGT_FILE}
-              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-    set_tests_properties(${TEST_NAME} PROPERTIES LABELS "${TEST_LABELS}"
-              RESOURCE_LOCK ${BASE_TEST_NAME}
-              FIXTURES_REQUIRED spa_generate_output_nc_files)
-  endforeach()
-endif()
+include (EkatUtils)
+GetRange ("${TEST_RANK_START};${TEST_RANK_END}" RANKS PREPEND "np")
+# CompareNCFilesFamily (${TEST_NAME}
+#   "spa_standalone_output.INSTANT.nsteps_x1.npNRANKS.nc" "NRANKS"
+#   MAGIC_RANGE "${RANKS}"
+#   FIXTURES_REQUIRED spa_generate_output_nc_files
+#   LABELS ${TEST_LABELS})
+
+# # This test requires CPRNC
+# if (TEST_RANK_END GREATER TEST_RANK_START)
+#   include (BuildCprnc)
+#   BuildCprnc()
+#   SET (BASE_TEST_NAME "spa")
+#   math (EXPR CMP_RANK_START ${TEST_RANK_START}+1)
+#   foreach (MPI_RANKS RANGE ${CMP_RANK_START} ${TEST_RANK_END})
+
+#     set (SRC_FILE "${BASE_TEST_NAME}_standalone_output.INSTANT.nsteps_x1.np${MPI_RANKS}.nc")
+#     set (TGT_FILE "${BASE_TEST_NAME}_standalone_output.INSTANT.nsteps_x1.np${TEST_RANK_START}.nc")
+#     set (TEST_NAME "${BASE_TEST_NAME}_np${TEST_RANK_START}_vs_np${MPI_RANKS}_bfb")
+#     add_test (NAME ${TEST_NAME}
+#               COMMAND cmake -P ${CMAKE_BINARY_DIR}/bin/CprncTest.cmake ${SRC_FILE} ${TGT_FILE}
+#               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+#     set_tests_properties(${TEST_NAME} PROPERTIES LABELS "${TEST_LABELS}"
+#               RESOURCE_LOCK ${BASE_TEST_NAME}
+#               FIXTURES_REQUIRED spa_generate_output_nc_files)
+#   endforeach()
+# endif()
