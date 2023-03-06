@@ -6,8 +6,6 @@ if (compile_threaded)
 endif()
 
 string(APPEND SLIBS " -L$ENV{PNETCDF_PATH}/lib -lpnetcdf")
-set(NETCDF_PATH "$ENV{NETCDF_DIR}")
-set(PNETCDF_PATH "$ENV{PNETCDF_DIR}")
 set(PIO_FILESYSTEM_HINTS "gpfs")
 string(APPEND CXX_LIBS " -lstdc++")
 
@@ -16,7 +14,7 @@ SET(CMAKE_Fortran_COMPILER "ftn" CACHE STRING "")
 SET(CMAKE_CXX_COMPILER "hipcc" CACHE STRING "")
 
 string(APPEND CXXFLAGS " -I${MPICH_DIR}/include")
-string(APPEND LDFLAGS " -L${MPICH_DIR}/lib -lmpi -L/opt/cray/pe/mpich/8.1.16/gtl/lib -lmpi_gtl_hsa")
+string(APPEND LDFLAGS " -L${MPICH_DIR}/lib -lmpi -lmpi_gtl_hsa")
 
 # For YAKL's -lroctx64 -lrocfft; the rocm module doesn't set this.
 string(APPEND LDFLAGS " -L$ENV{ROCM_PATH}/lib")
