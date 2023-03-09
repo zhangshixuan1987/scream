@@ -877,15 +877,16 @@ void AtmosphereDriver::set_initial_conditions ()
 
       if (fname == "phis") {
         // Topography (phis) is a special case that should
-        // be loaded from the topography file (assuming
-        // input files doesn't contain a value).
-        if (fvphyshack) {
-          this_grid_topo_fnames_nc.push_back("PHIS_d");
-          this_grid_topo_fnames_eamxx.push_back("phis");
-        } else {
+        // be loaded from the topography file, where phis
+        // has name "PHIS_d" on the GLL grid and "PHIS" on
+        // the PG2 grid.
+        if (grid_name == "Physics PG2") {
           this_grid_topo_fnames_nc.push_back("PHIS");
           this_grid_topo_fnames_eamxx.push_back("phis");
-       }
+        } else if (grid_name == "Physics GLL") {
+          this_grid_topo_fnames_nc.push_back("PHIS_d");
+          this_grid_topo_fnames_eamxx.push_back("phis");
+        }
       } else if (c.size()==0) {
         // If this field is the parent of other subfields, we only read from file the subfields.
         if (not ekat::contains(this_grid_ic_fnames,fname)) {
