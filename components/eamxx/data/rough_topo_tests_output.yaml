@@ -1,6 +1,6 @@
 %YAML 1.1
 ---
-Casename: ${CASE}.scream.h0
+filename_prefix: ${CASE}.scream.h0
 Averaging Type: Average
 Max Snapshots Per File: 1
 Fields:
