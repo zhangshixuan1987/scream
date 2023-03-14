@@ -31,11 +31,11 @@ cd ${casepath}
 ./xmlchange DEBUG=FALSE #optimized build.
 ./xmlchange JOB_QUEUE=batch #debug or batch
 ./xmlchange JOB_WALLCLOCK_TIME=2:00
-./xmlchange STOP_OPTION=nstep #how long to run for
+./xmlchange STOP_OPTION=nsteps #how long to run for
 ./xmlchange STOP_N=2
 ./xmlchange PIO_NETCDF_FORMAT="64bit_data"
 ./xmlchange SCREAM_CMAKE_OPTIONS="`./xmlquery -value SCREAM_CMAKE_OPTIONS | sed 's/SCREAM_NUM_VERTICAL_LEV [0-9][0-9]*/SCREAM_NUM_VERTICAL_LEV 128/'`"
-./xmlchange HIST_N=2; ./xmlchange HIST_OPTION=nstep ;
+./xmlchange HIST_N=2; ./xmlchange HIST_OPTION=nsteps ;
 ./xmlchange REST_N=999999; ./xmlchange REST_OPTION=nyears ;
 
 ./case.setup
