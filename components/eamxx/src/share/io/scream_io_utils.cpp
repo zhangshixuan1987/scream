@@ -75,4 +75,10 @@ std::string find_filename_in_rpointer (
   return filename;
 }
 
+void print_proc0 (const ekat::Comm& comm, std::string message, const bool actually_output) {
+  comm.barrier();
+  if (comm.am_i_root() and actually_output) std::cout << message << std::endl;
+  comm.barrier();
+}
+
 } // namespace scream

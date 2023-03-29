@@ -125,7 +125,7 @@ setup (const ekat::Comm& io_comm, const ekat::ParameterList& params,
   if (has_restart_data && m_params.isSublist("Checkpoint Control")) {
     // Output control
     // TODO: It would be great if there was an option where, if Checkpoint Control was not a sublist, we
-    //       could query the restart control information and just use that. 
+    //       could query the restart control information and just use that.
     auto& pl = m_params.sublist("Checkpoint Control");
     m_checkpoint_control.frequency                 = pl.get<int>("Frequency");
     m_checkpoint_control.frequency_units           = pl.get<std::string>("frequency_units");
@@ -160,7 +160,7 @@ setup (const ekat::Comm& io_comm, const ekat::ParameterList& params,
       // We can use the step counter in run_t0 to check at what point within an output interval
       // the previous simulation was stopped at.
       // NOTE: if you change the output frequency when you restart, this could lead to wonky behavior
-      m_output_control.nsamples_since_last_write = m_run_t0.get_num_steps() % m_output_control.frequency; 
+      m_output_control.nsamples_since_last_write = m_run_t0.get_num_steps() % m_output_control.frequency;
 
       if (has_restart_data) {
         using namespace scorpio;
@@ -210,7 +210,7 @@ void OutputManager::run(const util::TimeStamp& timestamp)
   using namespace scorpio;
 
   std::string timer_root = m_is_model_restart_output ? "EAMxx::IO::restart" : "EAMxx::IO::standard";
-  start_timer(timer_root); 
+  start_timer(timer_root);
   // Check if we need to open a new file
   ++m_output_control.nsamples_since_last_write;
   ++m_checkpoint_control.nsamples_since_last_write;
@@ -228,7 +228,7 @@ void OutputManager::run(const util::TimeStamp& timestamp)
   auto& filename  = filespecs.filename;
 
   // Compute filename (if write step)
-  start_timer(timer_root+"::get_new_file"); 
+  start_timer(timer_root+"::get_new_file");
   if (is_write_step) {
     // Check if we need to open a new file
     if (not filespecs.is_open) {
@@ -261,24 +261,24 @@ void OutputManager::run(const util::TimeStamp& timestamp)
       set_int_attribute_c2f(filename.c_str(),"last_write_time",last_write_time);
     }
   }
-  stop_timer(timer_root+"::get_new_file"); 
+  stop_timer(timer_root+"::get_new_file");
 
   // Log if we write output this step:
   if (m_atm_logger && is_write_step) {
     m_atm_logger->info("[EAMxx::output_manager] - Writing output:");
-    m_atm_logger->info("[EAMxx::output_manager]      CASE: " + m_casename); 
-    m_atm_logger->info("[EAMxx::output_manager]      FILE: " + filename); 
+    m_atm_logger->info("[EAMxx::output_manager]      CASE: " + m_casename);
+    m_atm_logger->info("[EAMxx::output_manager]      FILE: " + filename);
   }
 
   // Run the output streams
-  start_timer(timer_root+"::run_output_streams"); 
+  start_timer(timer_root+"::run_output_streams");
   for (auto& it : m_output_streams) {
     // Note: filename might reference an invalid string, but it's only used
     //       in case is_write_step=true, in which case it will *for sure* contain
     //       a valid file name.
     it->run(filename,is_write_step,m_output_control.nsamples_since_last_write,is_t0_output);
   }
-  stop_timer(timer_root+"::run_output_streams"); 
+  stop_timer(timer_root+"::run_output_streams");
 
   if (is_write_step) {
     for (const auto& it : m_globals) {
@@ -297,7 +297,7 @@ void OutputManager::run(const util::TimeStamp& timestamp)
       }
     }
 
-    start_timer(timer_root+"::update_snapshot_tally"); 
+    start_timer(timer_root+"::update_snapshot_tally");
     // We're adding one snapshot to the file
     ++filespecs.num_snapshots_in_file;
 
@@ -328,9 +328,9 @@ void OutputManager::run(const util::TimeStamp& timestamp)
     m_checkpoint_control.nsamples_since_last_write = 0;
     m_checkpoint_control.timestamp_of_last_write = timestamp;
 
-    stop_timer(timer_root+"::update_snapshot_tally"); 
+    stop_timer(timer_root+"::update_snapshot_tally");
   }
-  stop_timer(timer_root); 
+  stop_timer(timer_root);
 }
 /*===============================================================================================*/
 void OutputManager::finalize()
@@ -479,7 +479,7 @@ setup_file (      IOFileSpecs& filespecs, const IOControl& control,
   if (m_avg_type!=OutputAvgType::Instant) {
     // First, ensure a 'dim2' dimension with len=2 is registered.
     register_dimension(filename,"dim2","dim2",2,false);
-    
+
     // Register time_bnds var, with its dofs
     register_variable(filename,"time_bnds","time_bnds",time_units,{"dim2","time"},"double","double","time-dim2");
     scorpio::offset_t time_bnds_dofs[2] = {0,1};
@@ -522,7 +522,7 @@ setup_file (      IOFileSpecs& filespecs, const IOControl& control,
   set_int_attribute_c2f(filename.c_str(),"averaging_frequency",m_output_control.frequency);
   set_int_attribute_c2f(filename.c_str(),"max_snapshots_per_file",m_output_file_specs.max_snapshots_in_file);
   set_file_header(filename);
-  eam_pio_enddef (filename); 
+  eam_pio_enddef (filename);
 
   if (m_avg_type!=OutputAvgType::Instant) {
     // Unfortunately, attributes cannot be set in define mode (why?), so this could
@@ -590,7 +590,7 @@ push_to_logger()
   // List all FIELDS - TODO
 
 
-  
+
 }
 
 } // namespace scream

@@ -2,6 +2,7 @@
 
 #include "ekat/ekat_parameter_list.hpp"
 #include "share/io/scream_scorpio_interface.hpp"
+#include "share/io/scream_io_utils.hpp"
 
 #include <memory>
 #include <numeric>
@@ -353,7 +354,7 @@ void AtmosphereInput::read_variables (const int time_index)
   if (m_remapper) {
     m_remapper->remap(true);
   }
-} 
+}
 
 int AtmosphereInput::
 read_int_scalar (const std::string& name)
@@ -390,7 +391,7 @@ set_views (const std::map<std::string,view_1d_host>& host_views_1d,
 }
 
 /* ---------------------------------------------------------- */
-void AtmosphereInput::finalize() 
+void AtmosphereInput::finalize()
 {
   scorpio::eam_pio_closefile(m_filename);
 
@@ -406,14 +407,14 @@ void AtmosphereInput::finalize()
 } // finalize
 
 /* ---------------------------------------------------------- */
-void AtmosphereInput::init_scorpio_structures() 
+void AtmosphereInput::init_scorpio_structures()
 {
   // Register variables with netCDF file.
   register_variables();
   set_degrees_of_freedom();
 
   // Finish the definition phase for this file.
-  scorpio::set_decomp  (m_filename); 
+  scorpio::set_decomp  (m_filename);
 }
 
 /* ---------------------------------------------------------- */
@@ -435,7 +436,7 @@ void AtmosphereInput::register_variables()
     std::reverse(vec_of_dims.begin(),vec_of_dims.end());
 
     // Register the variable
-    // TODO  Need to change dtype to allow for other variables. 
+    // TODO  Need to change dtype to allow for other variables.
     //  Currently the field_manager only stores Real variables so it is not an issue,
     //  but in the future if non-Real variables are added we will want to accomodate that.
     //TODO: Should be able to simply inquire from the netCDF the dimensions for each variable.
@@ -558,9 +559,9 @@ AtmosphereInput::get_var_dof_offsets(const FieldLayout& layout)
   } else {
     // This field is *not* defined over columns, so it is not partitioned.
     std::iota(var_dof.begin(),var_dof.end(),0);
-  } 
+  }
 
-  return var_dof; 
+  return var_dof;
 }
 
 } // namespace scream

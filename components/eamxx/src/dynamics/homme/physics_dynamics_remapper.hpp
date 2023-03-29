@@ -46,6 +46,8 @@ public:
 
   bool compatible_layouts (const layout_type& src,
                            const layout_type& tgt) const override {
+    //std::cout << e2str(get_layout_type(src.tags())) << "   " << e2str(get_layout_type(tgt.tags())) << std::endl;
+
     return get_layout_type(src.tags())==get_layout_type(tgt.tags());
   }
 

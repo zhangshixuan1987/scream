@@ -89,7 +89,7 @@ extern "C" {
 // field-dependent extent, such as vector dimensions. Those have to
 // be "unpacked", storing a separate variable for each slice.
 
-inline std::string get_nc_tag_name (const FieldTag& t, const int extent) {
+inline std::string get_nc_tag_name (const FieldTag& t, const int extent, const std::string additional_suffix="") {
   using namespace ShortFieldTagsNames;
 
   std::string name = "";
@@ -135,10 +135,12 @@ inline std::string get_nc_tag_name (const FieldTag& t, const int extent) {
       EKAT_ERROR_MSG("Error! Field tag not supported in netcdf files.");
   }
 
+  name += additional_suffix;
+
   return name;
 }
 
 } // namespace scorpio
 } // namespace scream
 
-#endif // define SCREAM_SCORPIO_INTERFACE_HPP 
+#endif // define SCREAM_SCORPIO_INTERFACE_HPP

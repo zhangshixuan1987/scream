@@ -95,7 +95,7 @@ public:
   struct GllFvRemapTmp;
   void remap_dyn_to_fv_phys(GllFvRemapTmp* t = nullptr) const;
   void remap_fv_phys_to_dyn() const;
-  
+
 protected:
   void run_impl        (const double dt);
   void finalize_impl   ();
@@ -128,6 +128,10 @@ protected:
   std::shared_ptr<AbstractRemapper>   m_p2d_remapper;
   std::shared_ptr<AbstractRemapper>   m_d2p_remapper;
   std::shared_ptr<AbstractRemapper>   m_ic_remapper;
+
+  // TODO: add info, special remapper for phys cgll output in pg2 run
+  std::shared_ptr<AbstractRemapper>   m_d2cgll_remapper;
+
 
   // The dynamics and reference grids
   std::shared_ptr<const AbstractGrid> m_dyn_grid;  // Dynamics DGLL

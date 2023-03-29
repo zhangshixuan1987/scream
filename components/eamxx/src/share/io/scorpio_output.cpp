@@ -76,6 +76,10 @@ AtmosphereOutput (const ekat::Comm& comm,
   set_grid (grid);
   set_field_manager (fm,"io");
 
+  for (auto fname : m_fields_names) {
+    print_proc0(m_comm,"OtherConstructor: "+fname);
+  }
+
   // Setup I/O structures
   init ();
 }
@@ -142,9 +146,10 @@ AtmosphereOutput (const ekat::Comm& comm, const ekat::ParameterList& params,
     EKAT_REQUIRE_MSG (grid_found,
         "Error! Bad formatting of output yaml file. Missing 'Fields->$grid_name` sublist.\n");
   }
+
   sort_and_check(m_fields_names);
 
-  // Check if remapping and if so create the appropriate remapper 
+  // Check if remapping and if so create the appropriate remapper
   // Note: We currently support three remappers
   //   - vertical remapping from file
   //   - horizontal remapping from file
@@ -164,7 +169,7 @@ AtmosphereOutput (const ekat::Comm& comm, const ekat::ParameterList& params,
   set_diagnostics();
 
   // Setup remappers - if needed
-  if (use_vertical_remap_from_file) {  
+  if (use_vertical_remap_from_file) {
     // We build a remapper, to remap fields from the fm grid to the io grid
     auto vert_remap_file   = params.get<std::string>("vertical_remap_file");
     auto f_lev = get_field("p_mid","sim");
@@ -181,7 +186,7 @@ AtmosphereOutput (const ekat::Comm& comm, const ekat::ParameterList& params,
       const auto src = get_field(fname,"sim");
       const auto tgt_fid = m_vert_remapper->create_tgt_fid(src.get_header().get_identifier());
       const auto packsize = src.get_header().get_alloc_properties().get_largest_pack_size();
-      io_fm->register_field(FieldRequest(tgt_fid,packsize)); 
+      io_fm->register_field(FieldRequest(tgt_fid,packsize));
     }
     io_fm->registration_ends();
 
@@ -254,7 +259,11 @@ AtmosphereOutput (const ekat::Comm& comm, const ekat::ParameterList& params,
 
     // Reset the IO field manager
     set_field_manager(io_fm,"io");
-  } 
+  }
+
+  for (auto fname : m_fields_names) {
+    print_proc0(m_comm,"Constructor: "+fname);
+  }
 
   // Setup I/O structures
   init ();
@@ -571,7 +580,7 @@ set_grid (const std::shared_ptr<const AbstractGrid>& grid)
 
 void AtmosphereOutput::register_dimensions(const std::string& name)
 {
-/* 
+/*
  * Checks that the dimensions associated with a specific variable will be registered with IO file.
  * INPUT:
  *   field_manager: is a pointer to the field_manager for this simulation.
@@ -589,6 +598,11 @@ void AtmosphereOutput::register_dimensions(const std::string& name)
     // check tag against m_dims map.  If not in there, then add it.
     const auto& tags = layout.tags();
     const auto& dims = layout.dims();
+
+    // If field name has suffix _gll or _pg2, we will need 2 different
+    // versions of the ncol tag.
+    //if (tags[i] == ShortFieldTagsNames::COL )
+
     const auto tag_name = get_nc_tag_name(tags[i],dims[i]);
     auto tag_loc = m_dims.find(tag_name);
     auto is_partitioned = m_io_grid->get_partitioned_dim_tag()==tags[i];
@@ -600,8 +614,12 @@ void AtmosphereOutput::register_dimensions(const std::string& name)
       } else {
         tag_len = layout.dim(i);
       }
-      m_dims[get_nc_tag_name(tags[i],dims[i])] = std::make_pair(tag_len,is_partitioned);
-    } else {  
+
+      if (tag_name=="ncol")
+        print_proc0(m_comm,"REGISTER TAG: "+name+","+tag_name+","+std::to_string(tag_len));
+
+      m_dims[tag_name] = std::make_pair(tag_len,is_partitioned);
+    } else {
       EKAT_REQUIRE_MSG(m_dims.at(tag_name).first==dims[i] or is_partitioned,
         "Error! Dimension " + tag_name + " on field " + name + " has conflicting lengths");
     }
@@ -822,9 +840,9 @@ AtmosphereOutput::get_var_dof_offsets(const FieldLayout& layout)
   } else {
     // This field is *not* defined over columns, so it is not partitioned.
     std::iota(var_dof.begin(),var_dof.end(),0);
-  } 
+  }
 
-  return var_dof; 
+  return var_dof;
 }
 /* ---------------------------------------------------------- */
 void AtmosphereOutput::set_degrees_of_freedom(const std::string& filename)
@@ -841,7 +859,7 @@ void AtmosphereOutput::set_degrees_of_freedom(const std::string& filename)
     m_dofs.emplace(std::make_pair(name,var_dof.size()));
   }
 
-  /* TODO: 
+  /* TODO:
    * Gather DOF info directly from grid manager
   */
 } // set_degrees_of_freedom
@@ -854,6 +872,8 @@ setup_output_file(const std::string& filename,
 
   // Register dimensions with netCDF file.
   for (auto it : m_dims) {
+    print_proc0(m_comm,"dimensions: "+it.first+
+    ", partitioned: "+std::to_string(it.second.first)+","+std::to_string(it.second.second));
     register_dimension(filename,it.first,it.first,it.second.first,it.second.second);
   }
 
@@ -964,7 +984,7 @@ create_diagnostic (const std::string& diag_field_name) {
   auto lev_and_idx = ekat::split(last,'_');
   auto pos = lev_and_idx[0].find_first_not_of("0123456789");
   auto lev_str = lev_and_idx[0].substr(pos);
-  
+
   if (last=="tom" || last=="bot" || lev_str=="lev") {
     // Diagnostic is a horizontal slice at a specific level
     diag_name = "FieldAtLevel";

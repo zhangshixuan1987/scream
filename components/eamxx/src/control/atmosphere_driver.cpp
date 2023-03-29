@@ -1237,9 +1237,9 @@ void AtmosphereDriver::initialize_atm_procs ()
 
   if (fvphyshack) {
     // [CGLL ICs in pg2] See related notes in atmosphere_dynamics.cpp.
-    const auto gn = "Physics GLL";
-    m_field_mgrs[gn]->clean_up();
-    m_field_mgrs.erase(gn);
+    //const auto gn = "Physics GLL";
+    //m_field_mgrs[gn]->clean_up();
+    //m_field_mgrs.erase(gn);
   }
 
   m_ad_status |= s_procs_inited;

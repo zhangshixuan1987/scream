@@ -227,7 +227,7 @@ contains
     ! It could happen that we are running a test, with an input file opening the
     ! same file that an output stream just wrote. In this case, the def phase ended
     ! during the output setup.
-    ! 
+    !
     if (.not. current_atm_file%is_enddef) then
       ! Gather the pio decomposition for all variables in this file, and assign them pointers.
       call set_decomp(trim(filename))
@@ -351,10 +351,17 @@ contains
     type(pio_atm_file_t),pointer :: pio_atm_file
     type(hist_var_t), pointer    :: hist_var
     integer                      :: dim_ii
-    integer                      :: ierr
+    integer                      :: ierr, atm_rank
     logical                      :: found,var_found
 
     type(hist_var_list_t), pointer :: curr, prev
+
+    call MPI_Comm_rank(atm_mpicom, atm_rank, ierr)
+
+    call MPI_BARRIER( atm_mpicom, ierr)
+    !if (atm_rank==1) write(*,*) shortname,var_dimensions
+    call MPI_BARRIER( atm_mpicom, ierr)
+
 
     var_found = .false.
 
@@ -489,7 +496,7 @@ contains
     type(hist_coord_t), pointer  :: hist_coord
 
     type(hist_var_list_t), pointer :: curr, prev
-    
+
     var_found = .false.
 
     ! Find the pointer for this file
@@ -665,7 +672,7 @@ contains
     if (time>=0) ierr = pio_put_var(pio_atm_file%pioFileDesc,var%piovar,(/ pio_atm_file%numRecs /), (/ 1 /), (/ time /))
   end subroutine eam_update_time
 !=====================================================================!
-  ! Assign institutions to header metadata for a specific pio output file. 
+  ! Assign institutions to header metadata for a specific pio output file.
   subroutine eam_pio_createHeader(File)
 
     type(file_desc_t), intent(in) :: File             ! Pio file Handle
@@ -674,7 +681,7 @@ contains
     ! We are able to have EAMxx directly set most attributes in the HEADER
     ! except the list of institutions which appears to have a string that is too
     ! long to accomodate using `set_str_attribute` as it is currently defined.
-    ! So we keep the setting of institutions here.  
+    ! So we keep the setting of institutions here.
     ! TODO: revise the set_str_attribute code to allow the
     ! scream_output_manager.cpp to handle institutions too.
     ! NOTE: The use of //char(10)// causes each institution to be written on it's own line, makes it easier to read.
@@ -738,7 +745,7 @@ contains
     pio_file_list_back   => null()
     pio_file_list_front => null()
 
-    ! Init the iodecomp 
+    ! Init the iodecomp
     iodesc_list_top => null()
 
   end subroutine eam_init_pio_subsystem
@@ -863,12 +870,12 @@ contains
 
   end subroutine eam_pio_closefile
 !=====================================================================!
-  ! Helper function to debug list of decomps 
+  ! Helper function to debug list of decomps
   subroutine print_decomp()
     type(iodesc_list_t),   pointer :: iodesc_ptr
 
     integer :: total
-    integer :: cnt 
+    integer :: cnt
     logical :: assoc
 
     if (associated(iodesc_list_top)) then
@@ -901,7 +908,7 @@ contains
   subroutine deallocate_hist_var_t(var)
 
     type(hist_var_t), pointer        :: var
-    
+
     deallocate(var%compdof)
     deallocate(var%dimid)
     deallocate(var%dimlen)
@@ -1024,7 +1031,7 @@ contains
     integer, intent(in)       :: dtype            ! Datatype associated with the output
     integer, intent(in)       :: dimension_len(:) ! Array of the dimension lengths for this decomp
     integer(kind=pio_offset_kind), intent(in) :: compdof(:)       ! The degrees of freedom this rank is responsible for
-    type(iodesc_list_t), pointer :: iodesc_list   ! The pio decomposition list that holds this iodesc 
+    type(iodesc_list_t), pointer :: iodesc_list   ! The pio decomposition list that holds this iodesc
 
     logical                     :: found            ! Whether a decomp has been found among the previously defined decompositions
     type(iodesc_list_t),pointer :: curr, prev       ! Used to toggle through the recursive list of decompositions
@@ -1418,7 +1425,7 @@ contains
     integer, intent(in)          :: time_index
     real(c_double)               :: val
     real(c_double)               :: val_buf(1)
-    
+
     type(pio_atm_file_t), pointer :: pio_atm_file
     logical                       :: found
     integer                       :: dim_id, time_len, ierr
@@ -1701,7 +1708,7 @@ contains
       ! Otherwise default to the last time_index in the file
       call PIO_setframe(pio_atm_file%pioFileDesc,var%piovar,int(pio_atm_file%numRecs,kind=pio_offset_kind))
     end if
-    
+
     ! We don't want the extent along the 'time' dimension
     var_size = SIZE(var%compdof)
 
@@ -1737,7 +1744,7 @@ contains
       ! Otherwise default to the last time_index in the file
       call PIO_setframe(pio_atm_file%pioFileDesc,var%piovar,int(pio_atm_file%numRecs,kind=pio_offset_kind))
     end if
-    
+
     ! We don't want the extent along the 'time' dimension
     var_size = SIZE(var%compdof)
 
@@ -1773,7 +1780,7 @@ contains
       ! Otherwise default to the last time_index in the file
       call PIO_setframe(pio_atm_file%pioFileDesc,var%piovar,int(pio_atm_file%numRecs,kind=pio_offset_kind))
     end if
-    
+
     ! We don't want the extent along the 'time' dimension
     var_size = SIZE(var%compdof)
 
@@ -1813,12 +1820,12 @@ contains
     elseif (abs(int_in)<1e9) then
       fmt_str = trim(fmt_str)//"I9)"
     endif
-    
+
     if (int_in < 0) then
       write(str_out,fmt_str) "n", int_in
     else
       write(str_out,fmt_str) int_in
-    end if 
+    end if
 
   end subroutine convert_int_2_str
 

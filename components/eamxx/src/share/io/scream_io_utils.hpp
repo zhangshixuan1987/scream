@@ -96,7 +96,7 @@ struct IOControl {
           if  (frequency_units == "nmonths") {
             ret = (diff>0) && (diff % frequency == 0);
           }
-        } 
+        }
       } else {
         EKAT_REQUIRE_MSG(false,"Invalid frequency unit of [" + frequency_units + "] for output stream.  Please check that all outputs have frequency_units of\n"
                                "none, never, nsteps, nsecs, nmins, nhours, ndays, nmonths, nyears");
@@ -130,6 +130,8 @@ std::string find_filename_in_rpointer (
     const bool model_restart,
     const ekat::Comm& comm,
     const util::TimeStamp& run_t0);
+
+void print_proc0 (const ekat::Comm& comm, std::string message, const bool actually_output=true);
 
 } // namespace scream
 #endif // SCREAM_IO_UTILS_HPP

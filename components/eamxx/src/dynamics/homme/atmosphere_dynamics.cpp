@@ -31,6 +31,7 @@
 #include "physics/share/physics_constants.hpp"
 #include "share/util/scream_common_physics_functions.hpp"
 #include "share/util/scream_column_ops.hpp"
+#include "share/io/scream_io_utils.hpp"
 #include "share/property_checks/field_lower_bound_check.hpp"
 
 // Ekat includes
@@ -194,6 +195,9 @@ void HommeDynamics::set_grids (const std::shared_ptr<const GridsManager> grids_m
     fv_phys_rrtmgp_active_gases_init(grids_manager);
     // This is needed for the dp_ref init in initialize_homme_state.
     add_field<Computed>("pseudo_density",FL({COL,     LEV},{nc,  nlev_mid}),Pa,    rgn,N);
+
+    // Homme fields for output on GLL nodes
+    add_field<Computed>("omega_GLL", FL({COL, LEV}, {nc, nlev_mid}), Pa/s, rgn, N);
   }
 
   // Dynamics grid states
@@ -239,6 +243,8 @@ void HommeDynamics::set_grids (const std::shared_ptr<const GridsManager> grids_m
     // Homme's states.
     m_p2d_remapper = grids_manager->create_remapper(m_phys_grid,m_dyn_grid);
     m_d2p_remapper = grids_manager->create_remapper(m_dyn_grid,m_phys_grid);
+  } else {
+    m_d2cgll_remapper = grids_manager->create_remapper(m_dyn_grid,m_cgll_grid);
   }
 
   // Create separate remapper for initial_conditions
@@ -373,6 +379,12 @@ void HommeDynamics::initialize_impl (const RunType run_type)
 
   if (fv_phys_active()) {
     fv_phys_initialize_impl();
+
+    // Setup remapper for GLL output
+    m_d2cgll_remapper->registration_begins();
+    const auto& rgn = m_cgll_grid->name();
+    m_d2cgll_remapper->register_field(m_helper_fields.at("omega_dyn"), get_field_out("omega_gll"));
+    m_d2cgll_remapper->registration_ends();
   } else {
     // Setup the p2d and d2p remappers
     m_p2d_remapper->registration_begins();
@@ -649,6 +661,9 @@ void HommeDynamics::homme_post_process (const double dt) {
     fv_phys_post_process();
     // Apply Rayleigh friction to update temperature and horiz_winds
     rayleigh_friction_apply(dt);
+
+    // Remap GLL output fields
+    m_d2cgll_remapper->remap(true);
 
     return;
   }

@@ -109,22 +109,22 @@ inline std::string e2str (const FieldTag ft) {
 //   using enum FieldTag;
 namespace ShortFieldTagsNames {
 
-  constexpr auto EL   = FieldTag::Element;
-  constexpr auto COL  = FieldTag::Column;
-  constexpr auto GP   = FieldTag::GaussPoint;
-  constexpr auto TL   = FieldTag::TimeLevel;
-  constexpr auto LEV  = FieldTag::LevelMidPoint;
-  constexpr auto ILEV = FieldTag::LevelInterface;
-  constexpr auto CMP  = FieldTag::Component;
-  constexpr auto CMP1 = FieldTag::Component1;
-  constexpr auto CMP2 = FieldTag::Component2;
-  constexpr auto CMP3 = FieldTag::Component3;
+  constexpr auto EL      = FieldTag::Element;
+  constexpr auto COL     = FieldTag::Column;
+  constexpr auto GP      = FieldTag::GaussPoint;
+  constexpr auto TL      = FieldTag::TimeLevel;
+  constexpr auto LEV     = FieldTag::LevelMidPoint;
+  constexpr auto ILEV    = FieldTag::LevelInterface;
+  constexpr auto CMP     = FieldTag::Component;
+  constexpr auto CMP1    = FieldTag::Component1;
+  constexpr auto CMP2    = FieldTag::Component2;
+  constexpr auto CMP3    = FieldTag::Component3;
   // Added for rrtmgp - see TODO item above
-  constexpr auto NGAS = FieldTag::Gases;
-  constexpr auto SWBND = FieldTag::ShortWaveBand;
-  constexpr auto LWBND = FieldTag::LongWaveBand;
-  constexpr auto SWGPT = FieldTag::ShortWaveGpoint;
-  constexpr auto LWGPT = FieldTag::LongWaveGpoint;
+  constexpr auto NGAS    = FieldTag::Gases;
+  constexpr auto SWBND   = FieldTag::ShortWaveBand;
+  constexpr auto LWBND   = FieldTag::LongWaveBand;
+  constexpr auto SWGPT   = FieldTag::ShortWaveGpoint;
+  constexpr auto LWGPT   = FieldTag::LongWaveGpoint;
 }
 
 // Allow to stream FieldTag values as strings.
