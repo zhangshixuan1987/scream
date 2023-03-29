@@ -1,0 +1,19 @@
+%YAML 1.1
+---
+filename_prefix: ${CASE}.scream.h0
+Averaging Type: Instant
+Max Snapshots Per File: 1
+Fields:
+  Physics GLL:
+    Field Names:
+      - omega
+  Physics ${PHYSICS_GRID_TYPE}:
+    Field Names:
+      - omega
+output_control:
+  Frequency: ${HIST_N}
+  frequency_units: ${HIST_OPTION}
+Checkpoint Control:
+  Frequency: ${REST_N}
+  frequency_units: ${REST_OPTION}
+...
