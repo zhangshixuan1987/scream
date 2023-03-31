@@ -37,8 +37,8 @@ grids_manager:
 
 initial_conditions:
   # The name of the file containing the initial conditions for this test.
-  Filename: ${SCREAM_DATA_DIR}/init/${EAMxx_tests_IC_FILE_72lev}
-  topography_filename: ${TOPO_DATA_DIR}/USGS-gtopo30_ne4np4pg2_16x_converted.c20200527.nc
+  Filename: ${SCREAM_DATA_DIR}/init/screami_ne2np4L72_20220524.nc
+  topography_filename: ${TOPO_DATA_DIR}/USGS-gtopo30_ne2np4pg2_x6t_20230331.nc
   surf_sens_flux: 0.0
   surf_evap: 0.0
   precip_ice_surf_mass: 0.0
