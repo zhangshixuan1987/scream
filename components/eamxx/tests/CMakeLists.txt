@@ -1,6 +1,7 @@
 # Some tests for checking testing works
-set(EAMxx_tests_IC_FILE_72lev "screami_unit_tests_ne4np4L72_20220822.nc")
+set(EAMxx_tests_IC_FILE_72lev "screami_ne2np4L72_20220524.nc")
 set(EAMxx_tests_IC_FILE_128lev "screami_unit_tests_ne2np4L128_20220822.nc")
+set(EAMXX_tests_TOPO_FILE "USGS-gtopo30_ne2np4pg2_x6t_20230331.nc")
 
 add_subdirectory(generic)
 
