@@ -35,15 +35,15 @@ foreach (AVG_TYPE IN ITEMS INSTANT AVERAGE)
   CreateUnitTest(output_restart_${AVG_TYPE}_test "output_restart.cpp" scream_io LABELS "io"
     MPI_RANKS 1 ${SCREAM_TEST_MAX_RANKS}
     PROPERTIES RESOURCE_LOCK rpointer_file FIXTURES_SETUP restart_setup_${AVG_TYPE}
-    EXEC_ARGS --ekat-test-params ifile=io_test_restart_${AVG_TYPE}.yaml
+    EXE_ARGS --ekat-test-params ifile=io_test_restart_${AVG_TYPE}.yaml
   )
   foreach (MPI_RANKS RANGE 1 ${SCREAM_TEST_MAX_RANKS})
     set (SRC_FILE monolithic.${AVG_TYPE}.nsteps_x10.np${MPI_RANKS}.2000-01-01-00000.nc)
     set (TGT_FILE restarted.${AVG_TYPE}.nsteps_x10.np${MPI_RANKS}.2000-01-01-00000.nc)
-    add_test (NAME io_test_restart_check_np${MPI_RANKS}
+    add_test (NAME io_test_restart_check_${AVG_TYPE}_np${MPI_RANKS}
               COMMAND cmake -P ${CMAKE_BINARY_DIR}/bin/CprncTest.cmake ${SRC_FILE} ${TGT_FILE}
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-    set_property(TEST io_test_restart_check_np${MPI_RANKS}
+    set_property(TEST io_test_restart_check_${AVG_TYPE}_np${MPI_RANKS}
                  PROPERTY FIXTURES_REQUIRED restart_setup_${AVG_TYPE})
   endforeach()
 endforeach()
