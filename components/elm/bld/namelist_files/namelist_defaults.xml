@@ -241,7 +241,12 @@ lnd/clm2/surfdata_map/surfdata_arcticx4v1pg2_simyr2000_c210707.nc</fsurdat>
 lnd/clm2/surfdata_map/surfdata_arcticx4v1pg2_simyr1950_c221017.nc</fsurdat>
 <fsurdat hgrid="ne0np4_arcticx4v1.pg2"   sim_year="1850" use_crop=".false." >
 lnd/clm2/surfdata_map/surfdata_arcticx4v1pg2_simyr1850_c210707.nc</fsurdat>
-
+<fsurdat hgrid="ne0np4_arnep_ne1024" sim_year="2000" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/surfdata_ne32x32_ARNEPpg2_simyr2000_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_tcna_ne1024" sim_year="2000" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/surfdata_ne32x32_TCNApg2_simyr2000_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_arnep_ne1024" sim_year="2010" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/surfdata_ne32x32_ARNEPpg2_simyr2010_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_tcna_ne1024" sim_year="2010" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/surfdata_ne32x32_TCNApg2_simyr2010_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_arnep_ne1024" sim_year="1850" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/surfdata_ne32x32_ARNEPpg2_simyr1850_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_tcna_ne1024" sim_year="1850" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/surfdata_ne32x32_TCNApg2_simyr1850_c230407.nc</fsurdat>
 
 <!-- f10 resolution -->
 

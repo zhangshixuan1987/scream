@@ -25,6 +25,8 @@
 <dtime dyn="se"    hgrid="ne0np4_sooberingoa_x4x8v1_lowcon"  >600</dtime>
 <dtime dyn="se"    hgrid="ne0np4_enax4v1">900</dtime>
 <dtime dyn="se"    hgrid="ne0np4_twpx4v1">900</dtime>
+<dtime dyn="se"    hgrid="ne0np4_arnep_ne1024" >100</dtime>
+<dtime dyn="se"    hgrid="ne0np4_tcna_ne1024"  >100</dtime>
 
 <dtime dyn="sld"                   >3600</dtime>
 
@@ -66,6 +68,9 @@
 <ncdata hgrid="ne30np4"   nlev="72"  ic_ymd="20160801">atm/cam/inic/homme/ifs_oper_T1279_2016080100_mod_subset_to_e3sm_ne30np4_topoadj_L72_c20200313.nc   </ncdata>
 <ncdata hgrid="ne4np4"    nlev="128" ic_ymd="20160801">atm/cam/inic/homme/ifs_oper_T1279_2016080100_mod_subset_to_e3sm_ne4np4_topoadj_L128_c20200313.nc   </ncdata>
 <ncdata hgrid="ne4np4"    nlev="72"  ic_ymd="20160801">atm/cam/inic/homme/ifs_oper_T1279_2016080100_mod_subset_to_e3sm_ne4np4_topoadj_L72_c20200313.nc    </ncdata>
+<!-- SCREAM L128 RRM HICCUP HINDCAST-->
+<ncdata hgrid="ne0np4_arnep_ne1024"   nlev="128" ic_ymd="20070101" >/pscratch/sd/z/zhan391/DARPA_project/SCREAM_INIT/HICCUP/2007-01-01/HICCUP.atm_era5.2007-01-01.ne32x32_ARNEPpg2.L128.nc</ncdata>
+<ncdata hgrid="ne0np4_tcna_ne1024"    nlev="128" ic_ymd="20070101" >/pscratch/sd/z/zhan391/DARPA_project/SCREAM_INIT/HICCUP/2007-01-01/HICCUP.atm_era5.2007-01-01.ne32x32_TCNApg2.L128.nc</ncdata>
 
 <!-- L60 files - primarily added for new MMF default (2021) -->
 <!-- These were initially created from L72 files or regridded from similar grid. --> 
@@ -168,6 +173,8 @@
 <bnd_topo hgrid="ne0np4_sooberingoa_x4x8v1_lowcon"  >atm/cam/topo/USGS_sooberingoax4x8v1-tensor12x_c150612.nc</bnd_topo>
 <bnd_topo hgrid="ne0np4_enax4v1">atm/cam/topo/USGS_enax4v1_tensorx12_consistentSGH_170522.nc</bnd_topo>
 <bnd_topo hgrid="ne0np4_twpx4v1" >atm/cam/topo/USGS_twpx4v1_tensor12x_consistentSGH_170629.nc</bnd_topo>
+<bnd_topo hgrid="ne0np4_arnep_ne1024" npg="2">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/USGS-gtopo30_ne32x32_ARNEPpg2_12xdel2.nc</bnd_topo>
+<bnd_topo hgrid="ne0np4_tcna_ne1024" npg="2">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/USGS-gtopo30_ne32x32_TCNApg2_12xdel2.nc</bnd_topo>
 
 <!-- ieflx_opt 0: atmonly, 3: coupled -->
 <ieflx_opt  ocn="socn"  >0</ieflx_opt>
@@ -734,6 +741,8 @@
 <drydep_srf_file hgrid="ne0np4_twpx4v1">atm/cam/chem/trop_mam/atmsrf_twpx4v1_170629.nc</drydep_srf_file>
 <!-- NOTE: ENA dry deposition file interpolated from existing rather than created new -->
 <drydep_srf_file hgrid="ne0np4_enax4v1">atm/cam/chem/trop_mam/atmsrf_enax4v1_170517.nc</drydep_srf_file>
+<drydep_srf_file hgrid="ne0np4_arnep_ne1024" npg="2">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/atmsrf_ne32x32_ARNEPpg2_20230407.nc</drydep_srf_file>
+<drydep_srf_file hgrid="ne0np4_tcna_ne1024" npg="2">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/atmsrf_ne32x32_TCNApg2_20230407.nc</drydep_srf_file>
 
 <!-- depvel data -->
 <depvel_file    >atm/cam/chem/trop_mozart/dvel/depvel_monthly.nc</depvel_file>
@@ -1347,6 +1356,8 @@
 <se_ne hgrid="ne0np4_sooberingoa_x4x8v1_lowcon"  > 0 </se_ne>
 <se_ne hgrid="ne0np4_enax4v1">0</se_ne>
 <se_ne hgrid="ne0np4_twpx4v1" > 0 </se_ne>
+<se_ne hgrid="ne0np4_arnep_ne1024">0</se_ne>
+<se_ne hgrid="ne0np4_tcna_ne1024" > 0 </se_ne>
 
 <mesh_file>/dev/null</mesh_file>
 <mesh_file hgrid="ne0np4_arm_x8v3_lowcon"  >atm/cam/inic/homme/arm_x8v3_lowcon.g</mesh_file>
@@ -1358,6 +1369,8 @@
 <mesh_file hgrid="ne0np4_sooberingoa_x4x8v1_lowcon"  >atm/cam/inic/homme/sooberingoax4x8v1.g</mesh_file>
 <mesh_file hgrid="ne0np4_enax4v1">atm/cam/inic/homme/enax4v1.g</mesh_file>
 <mesh_file hgrid="ne0np4_twpx4v1" >atm/cam/inic/homme/twpx4v1.g</mesh_file>
+<mesh_file hgrid="ne0np4_arnep_ne1024" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/ne32x32_ARNEP.g</mesh_file>
+<mesh_file hgrid="ne0np4_tcna_ne1024" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/ne32x32_TCNA.g</mesh_file>
 
 <!-- viscosity  -->
 
@@ -1653,6 +1666,10 @@ with se_tstep, dt_remap_factor, dt_tracer_factor set to -1
 <fsurdat hgrid="ne60np4"   sim_year="2000">lnd/clm2/surfdata_map/surfdata_ne60np4_simyr2000_c120416.nc</fsurdat>
 <fsurdat hgrid="ne120np4"  sim_year="2000">lnd/clm2/surfdata_map/surfdata_ne120np4_simyr2000_c120711.nc</fsurdat>
 <fsurdat hgrid="ne240np4"  sim_year="2000">lnd/clm2/surfdata_map/surfdata_ne240np4_simyr2000_c110801.nc</fsurdat>
+<fsurdat hgrid="ne0np4_arnep_ne1024" sim_year="2000" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/surfdata_ne32x32_ARNEPpg2_simyr2000_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_tcna_ne1024" sim_year="2000" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/surfdata_ne32x32_TCNApg2_simyr2000_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_arnep_ne1024" sim_year="2010" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/surfdata_ne32x32_ARNEPpg2_simyr2010_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_tcna_ne1024" sim_year="2010" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/surfdata_ne32x32_TCNApg2_simyr2010_c230407.nc</fsurdat>
 
 <!-- for pre-industrial simulations - year 1850 -->
 <fsurdat hgrid="64x128"    sim_year="1850">lnd/clm2/surfdata/surfdata_64x128_simyr1850_c090928.nc</fsurdat>
@@ -1662,6 +1679,8 @@ with se_tstep, dt_remap_factor, dt_tracer_factor set to -1
 <fsurdat hgrid="ne60np4"   sim_year="1850">lnd/clm2/surfdata/surfdata_ne60np4_simyr1850_c120416.nc</fsurdat>
 <fsurdat hgrid="ne120np4"  sim_year="1850">lnd/clm2/surfdata/surfdata_ne120np4_simyr1850_c110817.nc</fsurdat>
 <fsurdat hgrid="ne240np4"  sim_year="1850">lnd/clm2/surfdata/surfdata_ne240np4_simyr1850_c120127.nc</fsurdat>
+<fsurdat hgrid="ne0np4_arnep_ne1024" sim_year="1850" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/surfdata_ne32x32_ARNEPpg2_simyr1850_c230407.nc</fsurdat>
+<fsurdat hgrid="ne0np4_tcna_ne1024" sim_year="1850" >/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/surfdata_ne32x32_TCNApg2_simyr1850_c230407.nc</fsurdat>
 
 <!-- Dynamic PFT surface datasets (relative to {csmdata}) -->
 <fpftdyn hgrid="1.9x2.5"       sim_year="1850-2000" >lnd/clm2/surfdata/surfdata.pftdyn_1.9x2.5_simyr1850-2005_c091108.nc</fpftdyn>

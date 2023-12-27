@@ -1994,6 +1994,26 @@
       <mask>WC14to60E2r3</mask>
     </model_grid>
 
+    <model_grid alias="arnep_ne32x32pg2">
+      <grid name="atm">ne0np4_arnep_ne1024.pg2</grid>
+      <grid name="lnd">ne0np4_arnep_ne1024.pg2</grid>
+      <grid name="ocnice">oRRS18to6v3</grid>
+      <grid name="rof">r0125</grid>
+      <grid name="glc">null</grid>
+      <grid name="wav">null</grid>
+      <mask>oRRS18to6v3</mask>
+    </model_grid>
+
+    <model_grid alias="tcna_ne32x32pg2">
+      <grid name="atm">ne0np4_tcna_ne1024.pg2</grid>
+      <grid name="lnd">ne0np4_tcna_ne1024.pg2</grid>
+      <grid name="ocnice">oRRS18to6v3</grid>
+      <grid name="rof">r0125</grid>
+      <grid name="glc">null</grid>
+      <grid name="wav">null</grid>
+      <mask>oRRS18to6v3</mask>
+    </model_grid>
+
     <model_grid alias="ne30pg3_r05_oECv3">
       <grid name="atm">ne30np4.pg3</grid>
       <grid name="lnd">r05</grid>
@@ -2912,6 +2932,22 @@
       <desc>1-deg with 1/4-deg over Antarctica (version 1) pg2:</desc>
     </domain>
 
+    <domain name="ne0np4_arnep_ne1024.pg2">
+      <nx>954144</nx>
+      <ny>1</ny>
+      <file grid="atm|lnd" mask="oRRS18to6v3">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/domain.lnd.ne32x32_ARNEPpg2_oRRS18to6v3.230407.nc</file>
+      <file grid="ice|ocn" mask="oRRS18to6v3">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/domain.ocn.ne32x32_ARNEPpg2_oRRS18to6v3.230407.nc</file>
+      <desc>ne32 with ne1024 over Northeastern Pacific pg2:</desc>
+    </domain>
+
+    <domain name="ne0np4_tcna_ne1024.pg2">
+      <nx>1254624</nx>
+      <ny>1</ny>
+      <file grid="atm|lnd" mask="oRRS18to6v3">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/domain.lnd.ne32x32_TCNApg2_oRRS18to6v3.230407.nc</file>
+      <file grid="ice|ocn" mask="oRRS18to6v3">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/domain.ocn.ne32x32_TCNApg2_oRRS18to6v3.230407.nc</file>
+      <desc>ne32 with ne1024 over North Atlantic pg2:</desc>
+    </domain>
+
     <domain name="tx0.1v2">
       <nx>3600</nx>
       <ny>2400</ny>
@@ -3722,6 +3758,33 @@
       <map name="ATM2ROF_SMAPNAME">cpl/gridmaps/antarcticax4v1np4/map_antarcticax4v1pg2_to_r0125_mono.20200925.nc</map>
     </gridmap>
 
+
+    <gridmap atm_grid="ne0np4_arnep_ne1024.pg2" rof_grid="r0125">
+      <map name="ATM2ROF_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_ne32x32_ARNEPpg2_to_r0125_mono.20230407.nc</map>
+      <map name="ATM2ROF_SMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_ne32x32_ARNEPpg2_to_r0125_mono.20230407.nc</map>
+    </gridmap>
+
+    <gridmap atm_grid="ne0np4_tcna_ne1024.pg2" rof_grid="r0125">
+      <map name="ATM2ROF_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_ne32x32_TCNApg2_to_r0125_mono.20230407.nc</map>
+      <map name="ATM2ROF_SMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_ne32x32_TCNApg2_to_r0125_mono.20230407.nc</map>
+    </gridmap>
+
+    <gridmap atm_grid="ne0np4_arnep_ne1024.pg2" ocn_grid="oRRS18to6v3">
+      <map name="ATM2OCN_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_ne32x32_ARNEPpg2_to_oRRS18to6v3_mono.20230407.nc</map>
+      <map name="ATM2OCN_VMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_ne32x32_ARNEPpg2_to_oRRS18to6v3_bilin.20230407.nc</map>
+      <map name="ATM2OCN_SMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_ne32x32_ARNEPpg2_to_oRRS18to6v3_bilin.20230407.nc</map>
+      <map name="OCN2ATM_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_oRRS18to6v3_to_ne32x32_ARNEPpg2_mono.20230407.nc</map>
+      <map name="OCN2ATM_SMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_oRRS18to6v3_to_ne32x32_ARNEPpg2_mono.20230407.nc</map>
+    </gridmap>
+
+    <gridmap atm_grid="ne0np4_tcna_ne1024.pg2" ocn_grid="oRRS18to6v3">
+      <map name="ATM2OCN_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_ne32x32_TCNApg2_to_oRRS18to6v3_mono.20230407.nc</map>
+      <map name="ATM2OCN_VMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_ne32x32_TCNApg2_to_oRRS18to6v3_bilin.20230407.nc</map>
+      <map name="ATM2OCN_SMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_ne32x32_TCNApg2_to_oRRS18to6v3_bilin.20230407.nc</map>
+      <map name="OCN2ATM_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_oRRS18to6v3_to_ne32x32_TCNApg2_mono.20230407.nc</map>
+      <map name="OCN2ATM_SMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_oRRS18to6v3_to_ne32x32_TCNApg2_mono.20230407.nc</map>
+    </gridmap>
+
     <gridmap atm_grid="T62" ocn_grid="gx3v7">
       <map name="ATM2OCN_FMAPNAME">cpl/gridmaps/T62/map_T62_TO_gx3v7_aave.130322.nc</map>
       <map name="ATM2OCN_SMAPNAME">cpl/gridmaps/T62/map_T62_TO_gx3v7_blin.130322.nc</map>
@@ -4228,6 +4291,16 @@
     <gridmap lnd_grid="ne0np4_arcticx4v1.pg2" rof_grid="r05">
       <map name="LND2ROF_FMAPNAME">cpl/gridmaps/arcticx4v1pg2/map_arcticx4v1pg2_to_r05_mono.20210706.nc</map>
       <map name="ROF2LND_FMAPNAME">cpl/gridmaps/r05/map_r05_to_arcticx4v1pg2_mono.20210706.nc</map>
+    </gridmap>
+
+    <gridmap lnd_grid="ne0np4_arnep_ne1024.pg2" rof_grid="r0125">
+      <map name="LND2ROF_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_ne32x32_ARNEPpg2_to_r0125_mono.20230407.nc</map>
+      <map name="ROF2LND_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_arnep/meshes/map_r0125_to_ne32x32_ARNEPpg2_mono.20230407.nc</map>      
+    </gridmap>
+
+    <gridmap lnd_grid="ne0np4_tcna_ne1024.pg2" rof_grid="r0125">
+      <map name="LND2ROF_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_ne32x32_TCNApg2_to_r0125_mono.20230407.nc</map>
+      <map name="ROF2LND_FMAPNAME">/pscratch/sd/z/zhan391/DARPA_project/RRM_generation_tcna/meshes/map_r0125_to_ne32x32_TCNApg2_mono.20230407.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="ne60np4" rof_grid="r05">
