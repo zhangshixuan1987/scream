@@ -1531,7 +1531,9 @@ subroutine tphysac (ztodt,   cam_in,  &
     use cflx,               only: cflx_tend
     use perf_mod
     use flux_avg,           only: flux_avg_run
-    use nudging,            only: Nudge_Model,Nudge_ON,nudging_timestep_tend
+    use nudging,            only: Nudge_Model,Nudge_ON,nudging_timestep_tend, &
+                                  nudging_update_srf_flux, Nudge_Land, &
+                                  Nudge_SRF_On, Nudge_SRF_Flux_On 
     use phys_control,       only: use_qqflx_fixer
     use co2_cycle,          only: co2_cycle_set_ptend, co2_transport
     use co2_diagnostics,    only: get_carbon_sfc_fluxes, get_carbon_air_fluxes
@@ -1894,10 +1896,17 @@ end if ! l_gw_drag
     ! Update Nudging values, if needed
     !===================================================
     if((Nudge_Model).and.(Nudge_ON)) then
-      call nudging_timestep_tend(state,ptend)
+      call nudging_timestep_tend(state,ptend,ztodt)
       call physics_update(state,ptend,ztodt,tend)
     endif
     call cnd_diag_checkpoint( diag, 'NDG', state, pbuf, cam_in, cam_out )
+
+    !===================================
+    ! Apply nudging on surface flux etc. 
+    !===================================
+    if ((Nudge_Land) .and. (Nudge_SRF_On) .and. (Nudge_SRF_Flux_On)) then
+       call nudging_update_srf_flux(state, cam_in, cam_out, ztodt)
+    endif
 
 if (l_ac_energy_chk) then
     !-------------- Energy budget checks vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -2054,7 +2063,9 @@ subroutine tphysbc (ztodt,               &
     use subcol,          only: subcol_gen, subcol_ptend_avg
     use subcol_utils,    only: subcol_ptend_copy, is_subcol_on
     use phys_control,    only: use_qqflx_fixer, use_mass_borrower
-    use nudging,         only: Nudge_Model,Nudge_Loc_PhysOut,nudging_calc_tend
+    use nudging,         only: Nudge_Model,Nudge_Loc_PhysOut, &
+                               Nudge_Land, nudging_calc_tend, & 
+                               nudging_update_land_surface
     use debug_info,      only: get_debug_chunk, get_debug_macmiciter
     use lnd_infodata,    only: precip_downscaling_method
     use cflx,            only: cflx_tend
@@ -2869,7 +2880,7 @@ end if
     ! Update Nudging tendency if needed
     !===================================
     if (Nudge_Model .and. Nudge_Loc_PhysOut) then
-       call nudging_calc_tend(state)
+       call nudging_calc_tend(state, pbuf, ztodt)
     endif
 
     !===================================================
@@ -2928,6 +2939,13 @@ end if ! l_rad
     call t_startf('cam_export')
     call cam_export (state,cam_out,pbuf)
     call t_stopf('cam_export')
+
+    !===================================
+    ! Apply nudging on surface flux etc. 
+    !===================================
+    if (Nudge_Land) then
+       call nudging_update_land_surface(state, pbuf, cam_in, cam_out, ztodt)
+    endif
 
     ! Write export state to history file
     call t_startf('diag_export')
